@@ -1,0 +1,132 @@
+@import url("font-awesome.min.css");
+@import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic");
+
+@media screen {
+
+  html, body { height: 100%; width: 100%; margin: 0;  background-color: #FFFFFA;}
+
+  body, p{
+    font-family: "Source Sans Pro", Helvetica, sans-serif;
+    font-weight: lighter;
+    font-size: 16px;
+    color: #444;}
+
+
+  .red{
+    background-color: #FFFFFA;
+  }
+
+
+  .coltext{
+     padding: 10px;
+      padding-left: 40px;
+       padding-right:40px;
+  }
+
+
+
+  #lightblue {
+    border-left: 3px solid #39A0ED;
+    transition: all 500ms linear;
+    -moz-transition: all 500ms linear;
+    -webkit-transition: all 500ms linear;
+    -o-transition: all 500ms linear;
+  }
+
+  #lightblue:hover{
+    transition: all 500ms linear;
+    -moz-transition: all 500ms linear;
+    -webkit-transition: all 500ms linear;
+    -o-transition: all 500ms linear;
+
+    border-left-width:20px;
+    padding-left: 23px;
+    background-color:  #E0F1FF;
+    border-radius: 5px;
+    color: #32322C;
+  }
+
+
+
+
+ul {
+  list-style-type: circle;
+}
+
+.email{
+color:  #ea4335;
+border: 1px solid #ea4335;
+border-radius: 10px;
+            -webkit-transition: all 0.4s ease-in-out;
+            -moz-transition: all 0.4s ease-in-out;
+            -o-transition: all 0.4s ease-in-out;
+            transition: all 0.4s ease-in-out;
+}
+
+.email:hover{
+color: #FFFFFA;
+background-color: #ea4335;
+
+          -webkit-transition: all 0.4s ease-in-out;
+          -moz-transition: all 0.4s ease-in-out;
+          -o-transition: all 0.4s ease-in-out;
+          transition: all 0.4s ease-in-out;
+}
+
+.twitter{
+  color:  #1da1f2;
+  border: 1px solid #1da1f2;
+  border-radius: 10px;
+            -webkit-transition: all 0.4s ease-in-out;
+            -moz-transition: all 0.4s ease-in-out;
+            -o-transition: all 0.4s ease-in-out;
+            transition: all 0.4s ease-in-out;
+}
+
+.twitter:hover{
+color: #FFFFFA;
+background-color: #1da1f2;
+
+          -webkit-transition: all 0.4s ease-in-out;
+          -moz-transition: all 0.4s ease-in-out;
+          -o-transition: all 0.4s ease-in-out;
+          transition: all 0.4s ease-in-out;
+}
+
+.facebook{
+  color:#3b5998;
+  border: 1px solid #3b5998;
+  border-radius: 10px;
+            -webkit-transition: all 0.4s ease-in-out;
+            -moz-transition: all 0.4s ease-in-out;
+            -o-transition: all 0.4s ease-in-out;
+            transition: all 0.4s ease-in-out;
+}
+
+.facebook:hover{
+color: #FFFFFA;
+background-color: #3b5998;
+
+          -webkit-transition: all 0.4s ease-in-out;
+          -moz-transition: all 0.4s ease-in-out;
+          -o-transition: all 0.4s ease-in-out;
+          transition: all 0.4s ease-in-out;
+}
+
+.tophead{
+  border: 1px solid #4C6085;
+/*  background-color:#39A0ED;*/
+  background-color: #4C6085;
+  color: #FFFFFA;
+  height: 100%;
+}
+
+#modalhead {
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  color: #FFFFFA;
+  background-color: #39A0ED;
+}
+
+
+}

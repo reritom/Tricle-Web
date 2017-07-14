@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+{% extends 'base.html' %}
+
+{% block icon_block %}
+<h1 style="text-align: center;"><i class="fa fa-lock fa-2x" aria-hidden="true"></i></h1>
+{% endblock %}
+
+{% block content_block %}
+<div class="container"  id="jsalert">
+<div class="alert alert-danger">
+  <strong>Attention!</strong> Please enable JavaScript for full functionality.
+</div>
+</div>
+
+
+{% if user.is_authenticated %}
+<div class="container">
+	<div class="jumbotron" style="background-color: #EFF7F6;">
+
+<a style="text-decoration: none" href="#"><button type="button" class="btn btn-success navbar-btn btn-block btn-lg">Start Scrambling</button></a>
+<a style="text-decoration: none" href="{% url 'accounts:logout' %}"><button type="button" class="btn btn-warning navbar-btn btn-block btn-lg">Logout</button></a>
+</div>
+</div>
+{% else %}
+<div class="container">
+	<div class="jumbotron" style="background-color: #EFF7F6;">
+
+<a style="text-decoration: none" href="{% url 'accounts:login' %}"><button type="button" class="btn btn-success navbar-btn btn-block btn-lg">Login</button></a>
+<a style="text-decoration: none" href="{% url 'accounts:signup' %}"><button type="button" class="btn btn-primary navbar-btn btn-block btn-lg">Create Account</button></a>
+</div>
+</div>
+{% endif %}
+
+	<div class="container jumbotron red" style="text-align:justify;">
+
+  <p class="coltext" id="lightblue">It's no secret that everyone has pictures that they'd rather the world not see.
+     Whether they be scanned documents, personal pictures, or just images you don't want people to see yet,
+     you have the right to keep them private.</p>
+     <br>
+<p class="coltext" id="lightblue">
+Tricle uses an algorithm to hide your image within itself.
+ You simply enter three keys, upload your images, and we do the rest.
+ Then, when you want to unhide you image, simply upload the image and enter your three keys.</p>
+
+
+</div>
+{% endblock %}
