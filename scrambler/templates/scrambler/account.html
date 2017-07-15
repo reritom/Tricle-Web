@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block icon_block %}
+<h1 style="text-align: center;"><i class="fa fa-user fa-2x" aria-hidden="true"></i></h1>
+{% endblock %}
+
+{% block content_block  %}
+<div class="container">
+  {% if user.is_authenticated %}
+      <h1>
+      Welcome, {{ user.username }}
+    </h1>
+
+    <h2>Here you can find your usage stats and change your account details</h2>
+  {% endif %}
+
+</div>
+<div class="container">
+
+<h3>account deets</h3>
+<p> {{ user.username}}</p>
+
+  <p>{{ user.password }}
+  </p>
+
+  <p>{{ user.email }}</p>
+
+  <p>update account deets</p>
+</div>
+
+<div class="container">
+
+  <h3>scrambler deets</h3>
+</div>
+
+
+{% endblock %}

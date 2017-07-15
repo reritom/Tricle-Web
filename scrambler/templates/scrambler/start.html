@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block icon_block %}
+<h1 style="text-align: center;"><i class="fa fa-play fa-2x" aria-hidden="true"></i></h1>
+{% endblock %}
+
+{% block content_block  %}
+<div class="container">
+  <h1>Start</h1>
+</div>
+
+<div class="container">
+
+<form enctype="multipart/form-data" method="POST">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <input class="btn btn-default btn-block"type="submit" name="" value="Start">
+      </form>
+
+</div>
+
+{% endblock %}
