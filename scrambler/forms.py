@@ -8,4 +8,6 @@ class ScrambleForm(forms.Form):
     key_three = forms.CharField(label='Key Three', max_length=256)
 
     CHOICES=[('Scramble','scramble'), ('Unscramble','unscramble')]
-    Choice = forms.ChoiceField(choices=CHOICES)
+    mode = forms.ChoiceField(choices=CHOICES)
+
+    images = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))

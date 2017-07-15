@@ -6,10 +6,59 @@
 {% block content_block  %}
 <div class="container">
   <h1>Sign up</h1>
-  <form method="post">
+  <form method="post" data-validate-username-url="{% url 'accounts:validate_username' %}" data-validate-email-url="{% url 'accounts:validate_email' %}"></>
     {% csrf_token %}
     {% bootstrap_form form %}
     <input type="submit" name="" value="Sign Up" class="btn btn-default">
   </form>
 </div>
+{% endblock %}
+
+{% block js_block %}
+
+<script>
+$("#id_username").change(function () {
+  var form = $(this).closest("form");
+
+  $.ajax({
+    url: form.attr("data-validate-username-url"),
+    data: form.serialize(),
+    dataType: 'json',
+    success: function (data) {
+      if (data.is_taken) {
+        alert(data.error_message);
+        $("#id_username").val("");
+        $("#id_username").attr("placeholder", "That username is taken");
+        $("#id_username").css("border-color", "#ff6666");
+
+      }
+      else {
+
+        $("#id_username").css("border-color", "#66ff99");
+      }
+    }
+  });
+
+});
+  </script>
+
+  <script>
+  $("#id_email").change(function () {
+    var form = $(this).closest("form");
+    console.log($(this).val());
+    $.ajax({
+      url: form.attr("data-validate-email-url"),
+      data: form.serialize(),
+      dataType: 'json',
+      success: function (data) {
+        if (data.is_taken) {
+          alert(data.error_message);
+        }
+      }
+    });
+
+  });
+    </script>
+
+
 {% endblock %}
