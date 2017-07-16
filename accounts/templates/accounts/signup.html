@@ -1,18 +1,44 @@
 <!DOCTYPE html>
 
-{% extends "base_bless.html" %}
+{% extends "base.html" %}
 {% load bootstrap3 %}
+
+{% block icon_block %}
+<h1 style="text-align: center;"><i class="fa fa-plus-square-o fa-2x" aria-hidden="true"></i></h1>
+{% endblock %}
 
 {% block content_block  %}
 <div class="container">
-  <h1>Sign up</h1>
+  <div class="jumbotron">
+    <div class="container">
+
   <form method="post" data-validate-username-url="{% url 'accounts:validate_username' %}" data-validate-email-url="{% url 'accounts:validate_email' %}"></>
     {% csrf_token %}
     {% bootstrap_form form %}
-    <input type="submit" name="" value="Sign Up" class="btn btn-default">
+    <input type="submit" name="" value="Create Account" class="btn btn-success btn-block btn-lg">
   </form>
 </div>
+</div>
+
+</div>
 {% endblock %}
+
+
+{% block head_block %}
+<style type="text/css">
+
+label
+{
+  display:none;
+}
+
+.help-block {
+  display: none;
+}
+</style>
+{% endblock %}
+
+
 
 {% block js_block %}
 
@@ -26,11 +52,10 @@ $("#id_username").change(function () {
     dataType: 'json',
     success: function (data) {
       if (data.is_taken) {
-        alert(data.error_message);
         $("#id_username").val("");
         $("#id_username").attr("placeholder", "That username is taken");
         $("#id_username").css("border-color", "#ff6666");
-
+        $("#id_username").focus();
       }
       else {
 
@@ -45,14 +70,23 @@ $("#id_username").change(function () {
   <script>
   $("#id_email").change(function () {
     var form = $(this).closest("form");
-    console.log($(this).val());
+
     $.ajax({
       url: form.attr("data-validate-email-url"),
       data: form.serialize(),
       dataType: 'json',
       success: function (data) {
         if (data.is_taken) {
-          alert(data.error_message);
+          $("#id_email").val("");
+          $("#id_email").attr("placeholder", "That email address is taken");
+          $("#id_email").css("border-color", "#ff6666");
+
+          $("#id_email").focus();
+
+        }
+        else {
+
+          $("#id_email").css("border-color", "#66ff99");
         }
       }
     });

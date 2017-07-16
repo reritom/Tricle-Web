@@ -1,15 +1,40 @@
 <!DOCTYPE html>
 
-{% extends "base_bless.html" %}
+{% extends "base.html" %}
 {% load bootstrap3 %}
+
+
+
+{% block icon_block %}
+<h1 style="text-align: center;"><i class="fa fa-sign-in fa-2x" aria-hidden="true"></i></h1>
+{% endblock %}
 
 {% block content_block  %}
 <div class="container">
-  <h1>Log In</h1>
+
+<div class="jumbotron">
+
+  <div class="container">
+
   <form method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    <input type="submit" name="" value="Login" class="btn btn-default">
+    <input type="submit" name="" value="Login" class="btn btn-success btn-block btn-lg">
   </form>
 </div>
+</div>
+</div>
+{% endblock %}
+
+{% block head_block %}
+<style type="text/css">
+label[for="id_username"]
+{
+  display:none;
+}
+label[for="id_password"]
+{
+  display:none;
+}
+</style>
 {% endblock %}

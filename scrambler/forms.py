@@ -4,7 +4,7 @@ from scrambler.models import UserScrambleInfo
 
 class ScrambleForm(forms.Form):
     key_one = forms.CharField(max_length=256)
-    key_two = forms.CharField(label='Key Two', max_length=256)
+    key_two = forms.CharField(label='', max_length=256)
     key_three = forms.CharField(label='Key Three', max_length=256)
 
     CHOICES=[('Scramble','scramble'), ('Unscramble','unscramble')]
