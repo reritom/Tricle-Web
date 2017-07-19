@@ -1,23 +1,110 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
 
+
+{% block head_block %}
+<style type="text/css">
+label
+{
+  display:none;
+}
+
+</style>
+{% endblock %}
+
+
 {% block icon_block %}
 <h1 style="text-align: center;"><i class="fa fa-play fa-2x" aria-hidden="true"></i></h1>
 {% endblock %}
 
 {% block content_block  %}
+
+
 <div class="container">
-  <h1>Start</h1>
-</div>
+  <div class="jumbotron">
+
 
 <div class="container">
 
 <form enctype="multipart/form-data" method="POST">
         {% csrf_token %}
-        {% bootstrap_form form %}
-        <input class="btn btn-default btn-block" type="submit" name="" value="Start">
+
+        <div class="form-group"><input type="text" name="key_one" maxlength="256" class="form-control" title="" required placeholder="Enter your first key" id="id_key_one" /></div>
+        <div class="form-group"><input type="text" name="key_two" maxlength="256" class="form-control" title="" required placeholder="Enter your second key" id="id_key_two" /></div>
+        <div class="form-group"><input type="text" name="key_three" maxlength="256" class="form-control" title="" required placeholder="Enter your third key" id="id_key_three" /></div>
+        <div class="form-group"><label class="control-label" for="id_mode">Mode</label>
+          <select name="mode" id="id_mode" class="form-control regDropDown" title="">
+          <option value="Scramble">Scramble</option>
+          <option value="Unscramble">Unscramble</option>
+          </select>
+        </div>
+        <div style="margin-top: 0px; margin-bottom:20px;">
+
+        <div class="input-group">
+                <label class="input-group-btn">
+                    <span class="btn btn-primary">
+                        Browse&hellip; <input type="file" accept="image/*" style="display: none;" name="images" class="" title="" required multiple id="id_images">
+                    </span>
+                </label>
+                <input type="text" class="form-control" readonly>
+            </div>
+
+          </div>
+
+        <input class="btn btn-success btn-block btn-lg" type="submit" name="" value="Start">
+
+
+
+
       </form>
 
 </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block js_block %}
+
+<script type="text/javascript">
+$(function() {
+
+  // We can attach the `fileselect` event to all file inputs on the page
+  $(document).on('change', ':file', function() {
+    var input = $(this),
+        numFiles = input.get(0).files ? input.get(0).files.length : 1,
+        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label]);
+  });
+
+  // We can watch for our custom `fileselect` event like this
+  $(document).ready( function() {
+      $(':file').on('fileselect', function(event, numFiles, label) {
+
+          var input = $(this).parents('.input-group').find(':text'),
+              log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+          if( input.length ) {
+              input.val(log);
+          } else {
+              if( log ) alert(log);
+          }
+
+      });
+  });
+
+});
+</script>
+
+<script>
+$(document).ready(function () {
+$('input[type=file]').change(function () {
+var val = $(this).val().toLowerCase();
+var regex = new RegExp("(.*?)\.(png|jpeg|bmp|jpg)$");
+ if(!(regex.test(val))) {
+$(this).val('');
+alert('Please select correct file format');
+} }); });
+</script>
 
 {% endblock %}

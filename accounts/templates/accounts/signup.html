@@ -10,7 +10,7 @@
   <div class="jumbotron">
     <div class="container" id="form_area">
 
-  <form id="formdata" method="post"  data-user-isVal = "null" data-email-isVal = "null" data-validate-username-url="{% url 'accounts:validate_username' %}" data-validate-email-url="{% url 'accounts:validate_email' %}">
+  <form id="formdata" method="post"  data-userIsVal = "null" data-emailIsVal = "null" data-validate-username-url="{% url 'accounts:validate_username' %}" data-validate-email-url="{% url 'accounts:validate_email' %}">
     {% csrf_token %}
     {% bootstrap_form form %}
     <input id="CA_button" type="submit" name="" value="Create Account" class="btn btn-success btn-block btn-lg">
@@ -58,11 +58,11 @@ label
           $("#id_username").attr("placeholder", "That username is taken");
           $("#id_username").css("border-color", "#ff6666");
           $("#id_username").focus();
-          $("#formdata").data("user-isVal", "0");
+          $("#formdata").data("userIsVal", "0");
           }
         else {
           $("#id_username").css("border-color", "#66ff99");
-          $("#formdata").data("user-isVal", "1");
+          $("#formdata").data("userIsVal", "1");
           }
         }
       });
@@ -82,11 +82,11 @@ label
             $("#id_email").attr("placeholder", "That email address is taken");
             $("#id_email").css("border-color", "#ff6666");
             $("#id_email").focus();
-            $("#formdata").data("email-isVal", "0");
+            $("#formdata").data("emailIsVal", "0");
             }
         else {
           $("#id_email").css("border-color", "#66ff99");
-          $("#formdata").data("email-isVal", "1");
+          $("#formdata").data("emailIsVal", "1");
           }
         }
     });
@@ -95,42 +95,51 @@ label
 
 
 <script type="text/javascript">
-  console.log("1");
-
-  console.log("2");
   $("#CA_button").css("display", "none");
   $("#CA_doppleganger").css("display", "block");
-  console.log("3");
 </script>
 
 <script type="text/javascript">
-
-
     $("#CA_doppleganger").on('click', function() {
-
-      console.log("4");
+      var delay=2000; //1 second
+      var min_pass_len = 6;
       var ps1 = document.getElementById("id_password1").value;
       var ps2 = document.getElementById("id_password2").value;
 
-      if (ps1 != ps2){
-        console.log("5");
-        var delay=2000; //1 second
+      console.log(ps1.length);
+    console.log(  $("#formdata").data("userIsVal"));
 
-				setTimeout(function() {
-                    console.log("6");
+      if (ps1 != ps2){
+      setTimeout(function() {
+                  $("#CA_doppleganger").text("Create Account");
+                  $("#CA_doppleganger").css("border-color", "#4cae4c");
+                  $("#CA_doppleganger").css("background-color", "#5cb85c");
+      }, delay);
+      $('#CA_doppleganger').text("Passwords don't match");
+      $("#CA_doppleganger").css("border-color", "#eea236");
+      $("#CA_doppleganger").css("background-color", "#f0ad4e");
+      document.getElementById("id_password1").value = "";
+      document.getElementById("id_password2").value = "";
+
+      }
+
+      else if ((ps1.length < min_pass_len) || (ps2.length < min_pass_len)){
+        setTimeout(function() {
                     $("#CA_doppleganger").text("Create Account");
                     $("#CA_doppleganger").css("border-color", "#4cae4c");
                     $("#CA_doppleganger").css("background-color", "#5cb85c");
-
-                    console.log("7");
-
-				}, delay);
-        console.log("8");
-        $('#CA_doppleganger').text("Passwords don't match");
-      $("#CA_doppleganger").css("border-color", "#eea236");
-      $("#CA_doppleganger").css("background-color", "#f0ad4e");
-        console.log("9");
+        }, delay);
+        $('#CA_doppleganger').text("Password too short");
+        $("#CA_doppleganger").css("border-color", "#eea236");
+        $("#CA_doppleganger").css("background-color", "#f0ad4e");
+        document.getElementById("id_password1").value = "";
+        document.getElementById("id_password2").value = "";
       }
+
+
+
+
+
       else {
         $("#CA_button").click();
       }

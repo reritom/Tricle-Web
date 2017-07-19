@@ -6,7 +6,7 @@ from django.conf import settings
 import os
 
 from .forms import ScrambleForm
-from .scramble import scrambler
+from .scramble import scrambler, scrambler2
 
 from PIL import Image
 from datetime import datetime
@@ -14,27 +14,51 @@ from datetime import datetime
 
 def StartPage(request):
     if request.method == 'POST':
+            print("posted")
             form = ScrambleForm(request.POST, request.FILES)
             if form.is_valid():
+                print("isvalid")
                 form = form.cleaned_data
-                for f in request.FILES.getlist('images'):
-                    image = Image.open(f)
-                    user = str(request.user)
 
-                    #create dir
-                    if 'users' not in os.listdir(settings.MEDIA_ROOT):
-                        os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users'))
+                print(form['key_one'])
+                print(form['mode'])
 
-                    if user not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users')):
-                        os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user))
 
-                    if datetime.now().strftime('%Y-%m-%d') not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users', user)):
-                        os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d')))
+                if len(request.FILES.getlist('images')) > 0:
+                    for f in request.FILES.getlist('images'):
+                        #HttpResponse("Aww yeah")
 
-                    image.save(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), f.name))
+                        try:
+                            image = Image.open(f)
+                        except:
+                            return HttpResponse("Incorrect file type: " + f.name)
 
-                return HttpResponse("Aww yeah")
+                        final = scrambler2(form['mode'], form['key_one'], form['key_two'], form['key_three'], image)
+                        ###if user is flagged, run this part
+                        user = str(request.user)
 
+                        if 'users' not in os.listdir(settings.MEDIA_ROOT):
+                            os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users'))
+
+                        if user not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users')):
+                            os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user))
+
+                        if datetime.now().strftime('%Y-%m-%d') not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users', user)):
+                            os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d')))
+
+                        final.save(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), f.name))
+                        ##add encrypted list of keys
+                        ##end of flagged area
+
+                        ##pass image and keys to scramble
+
+                else:
+                    return HttpResponse("No files selected")
+
+
+
+            else:
+                print(form.errors)
                 #store form in session
                 #go to loading html
                 #ajax call from loading html
@@ -42,6 +66,8 @@ def StartPage(request):
                 #processes the images
                 #then injects them back into the loading page
                 #download button downloads zip of images
+
+            return HttpResponse("Aww yeah")
 
     else:
         form = ScrambleForm
