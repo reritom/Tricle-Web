@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block icon_block %}
+<h1 style="text-align: center;"><i class="fa fa-question fa-2x" aria-hidden="true"></i></h1>
+{% endblock %}
+
+
+{% block content_block %}
+<div class="container jumbotron red">
+<div class="coltext" id="lightblue" >
+
+  <h2><span style="font-weight:lighter;">What is </span><strong>Triclé</strong></h2>
+
+  <p style="font-size:1.25em;">Tricle uses an algorithm and three user given keys to scramble the pixels of an image.
+     This acts as a form of soft encryption, meaning you can keep you images close and accessible while
+     also keeping them safe from wandering eyes.</p>
+
+  <p style="font-size:1.25em;">Most methods for image privacy rely on either using hard encryption or putting images into
+     password protected galleries. While both of these methods have their benefits, hard encryption
+     requires complex software which usually costs money, and secure galleries aren't much use
+      if you wish to privately send your images around.</p>
+
+    <p style="font-size:1.25em;">Tricle will hide your image within itself. This means its as easy to deal with as any other image,
+       yet keeps its contents secure and can only be unscrambled using the three keys.
+       This process also allows for you to use additional privacy protection methods
+       such as typical encryption if you so desire.</p>
+  </div>
+</div>
+
+
+<div class="container jumbotron red">
+<div class="coltext" id="lightblue" >
+
+  <h2>Why the three keys?</h2>
+
+  <p style="font-size:1.25em;">Instead of using a single password or key to scramble the image, our algorithm uses three keys.
+    There are a handful of reasons why our algorithm uses three keys as opposed to a password, so we'll list the important ones below:</p>
+    <ul style="font-size:1.25em;">
+      <li>These days everything uses passwords and keys, and unfortunately a lot of people use the same password for multiple things.
+        If someone finds the password to your laptop and it happens to be the same as the key for your encryption,
+         then there is no point in the encryption. </li>
+
+      <li>By using three keys, the user is being forced to come up with something more unique, thus improving the security of the process.</li>
+
+      <li>By using three keys, the user can come up with a memorable phrase to scramble their image with.</li>
+      <br>
+    </ul>
+    <p style="font-size:1.25em;">Each key can consist of <strong>any characters</strong> and must be a <strong>minimum of three characters</strong> and a <strong>maximum of twenty</strong>
+       characters. The keys are also <strong>case sensitive</strong>. This is primarily for simplicity, but in later versions of the algorithm
+      these constraints are likely to change.
+</p>
+  </div>
+</div>
+
+
+
+<div class="container jumbotron red">
+<div class="coltext" id="lightblue" >
+  <h2>What information do you collect?</h2>
+  <p style="font-size:1.25em;">What information do you collect?
+As of release, no information is collected on our users. This means that none of your images are stored by us or even
+ visible to us and we don't collect anything that can identify the user.
+This is by design as we value the privacy of our users and because nothing is collected server-side.</p>
+<p style="font-size:1.25em;">However, there are plans to collect minimal information in the future, such as a vague location
+   at either county or state level (meaning if for example, you live in London, all we know is that
+    we have a user in London). Why? It would be interesting for us to know whether the site has gathered
+     momentum in an specific areas, and would allow us to see whether any future marketing techniques are having an impact.
+  But if this plan proceeds, all existing users will be notified beforehand.</p>
+  </div>
+</div>
+
+{% endblock %}

@@ -26,4 +26,8 @@ urlpatterns = [
     url(r'^scrambler/', include('django.contrib.auth.urls')),
     url(r'^test/$', views.TestPage.as_view(), name='test'),
     url(r'^thanks/$', views.ThanksPage.as_view(), name='thanks'),
+    url(r'^privacy$', views.PrivacyPage.as_view(), name='privacy'),
+    url(r'contact/$', views.ContactPage.as_view(), name='contact'),
+    url(r'global/$', views.stats, name='global'),
+    url(r'about/$', views.AboutPage.as_view(), name='about'),
 ]

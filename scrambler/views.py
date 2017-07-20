@@ -12,6 +12,10 @@ from PIL import Image
 from datetime import datetime
 # Create your views here.
 
+def DownloadLink(request, hash):
+
+    return render(request, "scrambler/down.html")
+
 def StartPage(request):
     if request.method == 'POST':
             print("posted")
