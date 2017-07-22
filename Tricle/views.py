@@ -7,13 +7,6 @@ from django.contrib.auth.models import User
 def index(request):
     num_visits=request.session.get('num_visits', 0)
     request.session['num_visits'] = num_visits+1
-
-    if request.user.is_authenticated():
-        user = request.user
-        try:
-            print("scram: ", user.profile.scramble_count)
-        except:
-            print("scramble count not initiated")
     return render(request, "index.html", {"num_vis" : request.session['num_visits']})
 
 def stats(request):

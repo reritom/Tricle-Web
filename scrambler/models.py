@@ -10,4 +10,4 @@ class Profile(models.Model):
     unscramble_count = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.user
+        return self.user.username

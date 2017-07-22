@@ -18,6 +18,7 @@ from .forms import ScrambleForm
 from .scramble import scrambler
 
 from PIL import Image
+import zipfile
 # Create your views here.
 
 
@@ -29,10 +30,19 @@ def load_url(request, hash):
 
     if url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
         return HttpResponse("url does not exist")
-    '''
+
     if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
-        return HttpResponse("Already processed")
-    '''
+        for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
+            if files.lower().endswith(('.zip')):
+                prezipped = files
+
+
+        prezipped_address = os.path.join(settings.MEDIA_ROOT, 'temp', url, prezipped)
+
+        response = HttpResponse(open(prezipped_address, 'rb').read(),
+                             content_type='application/zip')
+        response['Content-Disposition'] = 'attachment; filename=' + prezipped
+        return response
 
     user = str(request.user)
     userhash = user.encode("UTF-8")
@@ -50,15 +60,23 @@ def load_url(request, hash):
         return HttpResponseRedirect('/')
         ###change so that it checks if DIR exists, then redirects if it doesnt
 
+    timehash = sha1(str(datetime.now().isoformat()).encode("UTF-8")).hexdigest()[:5]
+    zipname = user + "_" + timehash + ".zip"
+    zipadr = os.path.join(media_path, zipname)
+
+    zf = zipfile.ZipFile(zipadr, mode='w')
+
     for f in os.listdir(media_path):
         #HttpResponse("Aww yeah")
-        if f == "data" or f == "marked.txt":
+        print("f1: ", f)
+        if f == "data" or f == "marked.txt" or f == zipname:
             pass
 
         else:
             image = Image.open(os.path.join(media_path, f))
 
             final = scrambler(form['mode'], form['k1'], form['k2'], form['k3'], image)
+            '''
             ###if user is flagged, run this part
             user = str(request.user)
 
@@ -74,15 +92,33 @@ def load_url(request, hash):
             final.save(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), f))
             ##add encrypted list of keys
             ##end of flagged area
+            '''
 
-            ##pass image and keys to scramble
+
+            final.save(os.path.join(media_path, f))
+
+            zf = zipfile.ZipFile(zipadr, mode='a')
+            try:
+                zf.write(os.path.join(media_path, f), arcname=f)
+            finally:
+                zf.close()
+
+            ####read this file into the ZIP
+
 
     with open(os.path.join(media_path, "marked.txt"),"w+") as f:
         f.write("")
 
     ##if user.marked, copy temp url dir to user/data/url
 
-    return HttpResponse(url)
+    response = HttpResponse(open(zipadr, 'rb').read(),
+                         content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=' + zipname
+
+
+    return response
+
+    #return HttpResponse(url)
     #return JsonResponse(data)
 
 
