@@ -1,15 +1,26 @@
 from django.shortcuts import render
 from django.views.generic import TemplateView
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.models import User
 # Create your views here.
 
 def index(request):
-    print(request.session)
     num_visits=request.session.get('num_visits', 0)
     request.session['num_visits'] = num_visits+1
+
+    if request.user.is_authenticated():
+        user = request.user
+        try:
+            print("scram: ", user.profile.scramble_count)
+        except:
+            print("scramble count not initiated")
     return render(request, "index.html", {"num_vis" : request.session['num_visits']})
 
 def stats(request):
     return render(request, "global.html")
+
+def ScramRedirect(request):
+    return HttpResponseRedirect("/")
 
 class ContactPage(TemplateView):
     template_name = 'contact.html'

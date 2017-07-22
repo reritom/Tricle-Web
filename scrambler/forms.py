@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.models import User
-from scrambler.models import UserScrambleInfo
 
 class ScrambleForm(forms.Form):
     key_one = forms.CharField(label='', max_length=256, widget=forms.TextInput(attrs={'placeholder': 'Enter your first key'}))

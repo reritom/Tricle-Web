@@ -30,4 +30,5 @@ urlpatterns = [
     url(r'contact/$', views.ContactPage.as_view(), name='contact'),
     url(r'global/$', views.stats, name='global'),
     url(r'about/$', views.AboutPage.as_view(), name='about'),
+    url(r'^scrambler/$', views.ScramRedirect),
 ]

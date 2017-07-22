@@ -1,7 +1,4 @@
-def scrambler():
-    pass
-
-def scrambler2(mode, key1, key2, key3, original):
+def scrambler(mode, key1, key2, key3, original):
     import os, time, random, sys
     from PIL import Image
     import numpy as np

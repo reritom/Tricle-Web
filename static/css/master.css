@@ -22,6 +22,11 @@
        padding-right:40px;
   }
 
+  .slow-spin {
+  -webkit-animation: fa-spin 6s infinite linear;
+  animation: fa-spin 6s infinite linear;
+}
+
 
 
   #lightblue {

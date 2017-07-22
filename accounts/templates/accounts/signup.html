@@ -42,18 +42,14 @@ label
 {% block js_block %}
 
 <script type="text/javascript">
-  console.log("a1");
   $("#id_username").change(function () {
-    console.log("har");
     var form = $(this).closest("form");
-    console.log("a2");
     $.ajax({
       url: form.attr("data-validate-username-url"),
       data: form.serialize(),
       dataType: 'json',
       success: function (data) {
         if (data.is_taken) {
-          console.log("a3");
           $("#id_username").val("");
           $("#id_username").attr("placeholder", "That username is taken");
           $("#id_username").css("border-color", "#ff6666");
@@ -106,9 +102,6 @@ label
       var ps1 = document.getElementById("id_password1").value;
       var ps2 = document.getElementById("id_password2").value;
 
-      console.log(ps1.length);
-    console.log(  $("#formdata").data("userIsVal"));
-
       if (ps1 != ps2){
       setTimeout(function() {
                   $("#CA_doppleganger").text("Create Account");
@@ -136,14 +129,9 @@ label
         document.getElementById("id_password2").value = "";
       }
 
-
-
-
-
       else {
         $("#CA_button").click();
       }
-      console.log("10");
     })
     //password check script
     </script>
