@@ -33,38 +33,27 @@ def load_url(request, hash):
     if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
         return HttpResponse("Already processed")
     '''
-    print("a")
 
     user = str(request.user)
     userhash = user.encode("UTF-8")
     userhash = sha1(userhash).hexdigest()[:6]
 
-    print("user: ", userhash)
-    print("url: ", url[:6])
-
     if url[:6] != userhash:  ##check if user is correct
         return HttpResponseRedirect('/')
-
-    print("b")
 
     media_path = os.path.join(settings.MEDIA_ROOT, 'temp', url)
 
     try:
         with open(os.path.join(media_path, 'data'), 'rb') as fp:
             form = pickle.load(fp)
-            print(form)
     except:
         return HttpResponseRedirect('/')
         ###change so that it checks if DIR exists, then redirects if it doesnt
 
-    print("c")
-
-    print(os.listdir(media_path))
-
     for f in os.listdir(media_path):
         #HttpResponse("Aww yeah")
         if f == "data" or f == "marked.txt":
-            print(f)
+            pass
 
         else:
             image = Image.open(os.path.join(media_path, f))
@@ -94,8 +83,6 @@ def load_url(request, hash):
     ##if user.marked, copy temp url dir to user/data/url
 
     return HttpResponse(url)
-
-
     #return JsonResponse(data)
 
 
@@ -117,14 +104,9 @@ def StartPage(request):
                     userhash = user.encode("UTF-8")
                     userhash = sha1(userhash).hexdigest()[:6]
 
-
-
                     otherhash = sha1(hashkey).hexdigest()[:18]
 
                     url = str(userhash) + str(otherhash)
-
-                    print("s_user:", userhash)
-                    print("s_url: ", url)
 
                     if 'temp' not in os.listdir(settings.MEDIA_ROOT):
                         os.mkdir(os.path.join(settings.MEDIA_ROOT, 'temp'))
