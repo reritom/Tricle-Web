@@ -11,4 +11,105 @@
   <h3 style="font-weight: lighter;">Analytics</h3>
   </div>
 </div>
+
+
+<div class="container">
+  <div class="jumbotron">
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Number of users:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    {{ user_count }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Number of unique logins today:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    {{ dau }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Number of interactions today:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    {{ todays_uploads_count }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+        Number of images uploaded today:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ todays_file_count }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Those of which were scrambled:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ todays_s_count }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    And those unscrambled:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ todays_u_count }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Total amount of image bytes uploaded since deployment:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ total_file_bytes }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Total number of images scrambled:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ total_scrambles }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  Total number of images unscrambled:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ total_unscrambles }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Total number of images processed:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ total_file_count }}
+  </div>
+</div>
+
+
+</div>
+</div>
+
+
+
 {% endblock %}

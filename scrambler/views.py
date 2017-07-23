@@ -33,6 +33,13 @@ when json respondes, change download button.
 
 '''
 
+'''
+need to write cleanup script. Go through all expiringurls. if they are expired,
+delete dir. if they arent, check if they are, delete dir if they are.
+
+then create expiredurl object, and delete expiring object
+'''
+
 def delete_dir(url):
     #check if dir is present, delete if it is
     if url in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
@@ -47,7 +54,7 @@ def load_url(request, hash):
 
     ##check if user is correct user for viewing this
     url = hash
-
+    print(1)
     if not ExpiringURL.objects.filter(url=url).exists():
         #url doesnt exist, so redirect
         return HttpResponseRedirect('/')
@@ -61,7 +68,6 @@ def load_url(request, hash):
 
     expiration = urlobj.created + timedelta(minutes=10)
 
-    print(expiration)
     if timezone.now() > expiration:
         #url has expired, mark as expired, delete dirs, redirect to homepage
         urlobj.expired = True
@@ -70,12 +76,11 @@ def load_url(request, hash):
         delete_dir(url)
         return HttpResponseRedirect('/')
 
-    '''
 
     if url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
-        return HttpResponse("url does not exist")
-
-    '''
+        urlobj.expired = True
+        urlobj.save()
+        return HttpResponseRedirect('/')
 
     if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
         for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
@@ -91,6 +96,9 @@ def load_url(request, hash):
             Profile.objects.get_or_create(user=users)
 
         return response
+
+    '''If marked.txt isnt in dir, and .zip is, then process broke, abort entire thing
+        mark it as expired, mark it as damaged, and delete dir'''
 
     user = str(request.user)
     userhash = user.encode("UTF-8")
@@ -116,30 +124,36 @@ def load_url(request, hash):
 
     for f in os.listdir(media_path):
         #HttpResponse("Aww yeah")
-        if f == "data" or f == "marked.txt" or f == zipname:
-            pass
-
-        else:
+        print(f.lower())
+        if f.lower().endswith(('bmp', 'jpg', 'png')):
             image = Image.open(os.path.join(media_path, f))
 
             final = scrambler(form['mode'], form['k1'], form['k2'], form['k3'], image)
-            '''
-            ###if user is flagged, run this part
-            user = str(request.user)
 
-            if 'users' not in os.listdir(settings.MEDIA_ROOT):
-                os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users'))
+            profile, check = Profile.objects.get_or_create(user=request.user)
 
-            if user not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users')):
-                os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user))
+            if profile.flagged == True:
+                if 'users' not in os.listdir(settings.MEDIA_ROOT):
+                    os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users'))
 
-            if datetime.now().strftime('%Y-%m-%d') not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users', user)):
-                os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d')))
+                if user not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users')):
+                    os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user))
 
-            final.save(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), f))
-            ##add encrypted list of keys
-            ##end of flagged area
-            '''
+                if datetime.now().strftime('%Y-%m-%d') not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users', user)):
+                    os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d')))
+
+                if urlobj.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'))):
+                    os.mkdir(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), urlobj.url))
+
+                final.save(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), urlobj.url, f))
+
+                with open(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), urlobj.url, "data"), 'wb') as fp:
+                    pickle.dump(form, fp)
+
+
+                ##add encrypted list of keys
+
+
 
 
             final.save(os.path.join(media_path, f))
@@ -193,7 +207,12 @@ def StartPage(request):
 
                     urlobj = ExpiringURL.objects.create()
                     urlobj.url = url
+                    urlobj.user_name = user
                     urlobj.save()
+
+                    if formdat['mode'] == 'Unscramble':
+                        urlobj.mode = 'Unscramble'
+
 
                     if 'temp' not in os.listdir(settings.MEDIA_ROOT):
                         os.mkdir(os.path.join(settings.MEDIA_ROOT, 'temp'))
@@ -219,10 +238,12 @@ def StartPage(request):
                             profile.save()
 
                         profile.total_size_of_uploaded_images = profile.total_size_of_uploaded_images + os.path.getsize(os.path.join(media_path, f.name))
+                        profile.total_file_count = profile.total_file_count + 1
                         profile.save()
 
                         urlobj.number_of_files = urlobj.number_of_files + 1
                         urlobj.save()
+
 
                     return render(request, "scrambler/download.html", {"dl_url" : url})
 
