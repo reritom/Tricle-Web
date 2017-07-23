@@ -6,35 +6,75 @@
 {% endblock %}
 
 {% block content_block  %}
+{% if user.is_authenticated %}
 <div class="container">
-  {% if user.is_authenticated %}
-      <h1>
-      Welcome, {{ user.username }}
+  <div class="jumbotron" style="background-color: #EFF7F6; text-align: center;">
+      <h1 style="font-weight: lighter;">
+      hey, {{ user.username }}
     </h1>
-
-    <h2>Here you can find your usage stats and change your account details</h2>
-  {% endif %}
-
+  </div>
 </div>
-<div class="container">
-
-<h3>account deets</h3>
-<p> {{ user.username}}</p>
-
-  <p>{{ user.password }}
-  </p>
-
-  <p>{{ user.email }}</p>
-
-  <p>update account deets</p>
-</div>
+{% endif %}
 
 <div class="container">
+  <div class="jumbotron">
 
-  <h3>scrambler deets</h3>
-  <p>{{ user.profile.scramble_count }}</p>
-  <p>{{ user.profile.unscramble_count }}</p>
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Username:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    {{ user.username}}
+  </div>
 </div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Email Address:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    {{ user.email }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+        Number of images scrambled:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ user.profile.scramble_count }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Number of images unscrambled:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ user.profile.unscramble_count }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Number of bytes uploaded:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ user.profile.total_size_of_uploaded_images }}
+  </div>
+</div>
+
+<br>
+
+<div class="row">
+  <div class="col-xs-12" style="margin-top:10px; margin-bottom:10px;">
+    <button type="button" class="btn btn-primary btn-block btn-lg" name="button">Change Account Details</button>
+  </div>
+</div>
+
+</div>
+</div>
+
 
 
 {% endblock %}

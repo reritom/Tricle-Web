@@ -1,18 +1,20 @@
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, ExpiringURL
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from hashlib import sha1
 
 import os
 import pickle
+import shutil
 
 from .forms import ScrambleForm
 from .scramble import scrambler
@@ -22,26 +24,72 @@ import zipfile
 # Create your views here.
 
 
+'''
+json respond download link which calls view which returns httpresponse.
+when json respondes, change download button.
+
+--add time checklist
+--add auto delete of files
+
+'''
+
+def delete_dir(url):
+    #check if dir is present, delete if it is
+    if url in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+        url_dir = os.path.join(settings.MEDIA_ROOT, 'temp', url)
+        shutil.rmtree(url_dir)
+        return
+    else:
+        return
+
 def load_url(request, hash):
     #url = get_object_or_404(TempUrl, url_hash=hash, expires__gte=datetime.now())
 
     ##check if user is correct user for viewing this
     url = hash
 
+    if not ExpiringURL.objects.filter(url=url).exists():
+        #url doesnt exist, so redirect
+        return HttpResponseRedirect('/')
+
+    urlobj = ExpiringURL.objects.get(url=url)
+
+    if urlobj.expired == True:
+        #check if it is expired, delete dir, redirect to home
+        delete_dir(url)
+        return HttpResponseRedirect('/')
+
+    expiration = urlobj.created + timedelta(minutes=10)
+
+    print(expiration)
+    if timezone.now() > expiration:
+        #url has expired, mark as expired, delete dirs, redirect to homepage
+        urlobj.expired = True
+        urlobj.save()
+
+        delete_dir(url)
+        return HttpResponseRedirect('/')
+
+    '''
+
     if url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
         return HttpResponse("url does not exist")
+
+    '''
 
     if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
         for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
             if files.lower().endswith(('.zip')):
                 prezipped = files
 
-
         prezipped_address = os.path.join(settings.MEDIA_ROOT, 'temp', url, prezipped)
-
         response = HttpResponse(open(prezipped_address, 'rb').read(),
                              content_type='application/zip')
         response['Content-Disposition'] = 'attachment; filename=' + prezipped
+
+        for users in User.objects.all():
+            Profile.objects.get_or_create(user=users)
+
         return response
 
     user = str(request.user)
@@ -68,7 +116,6 @@ def load_url(request, hash):
 
     for f in os.listdir(media_path):
         #HttpResponse("Aww yeah")
-        print("f1: ", f)
         if f == "data" or f == "marked.txt" or f == zipname:
             pass
 
@@ -144,6 +191,10 @@ def StartPage(request):
 
                     url = str(userhash) + str(otherhash)
 
+                    urlobj = ExpiringURL.objects.create()
+                    urlobj.url = url
+                    urlobj.save()
+
                     if 'temp' not in os.listdir(settings.MEDIA_ROOT):
                         os.mkdir(os.path.join(settings.MEDIA_ROOT, 'temp'))
 
@@ -166,6 +217,12 @@ def StartPage(request):
                         else:
                             profile.unscramble_count = profile.unscramble_count + 1
                             profile.save()
+
+                        profile.total_size_of_uploaded_images = profile.total_size_of_uploaded_images + os.path.getsize(os.path.join(media_path, f.name))
+                        profile.save()
+
+                        urlobj.number_of_files = urlobj.number_of_files + 1
+                        urlobj.save()
 
                     return render(request, "scrambler/download.html", {"dl_url" : url})
 

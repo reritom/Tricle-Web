@@ -11,10 +11,14 @@
     color: #444;}
 
 
+.rowhead{
+  background-color: #4C6085;
+  color: #FFFFFA;
+}
+
   .red{
     background-color: #FFFFFA;
   }
-
 
   .coltext{
      padding: 10px;
@@ -132,5 +136,9 @@ background-color: #3b5998;
   background-color: #39A0ED;
 }
 
+.indextop {
+color: #FFFFFA;
+text-align: center;
+}
 
 }
