@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from django.contrib.auth.models import User
-from .models import Profile, ExpiringURL, ExpiredURL
+from .models import Profile, ExpiringURL, ExpiredURL, DailyLedger
 
 from datetime import datetime, timedelta
 from hashlib import sha1
@@ -27,17 +27,6 @@ import zipfile
 '''
 json respond download link which calls view which returns httpresponse.
 when json respondes, change download button.
-
---add time checklist
---add auto delete of files
-
-'''
-
-'''
-need to write cleanup script. Go through all expiringurls. if they are expired,
-delete dir. if they arent, check if they are, delete dir if they are.
-
-then create expiredurl object, and delete expiring object
 '''
 
 def delete_dir(url):
@@ -177,9 +166,6 @@ def load_url(request, hash):
 
                 ##add encrypted list of keys
 
-
-
-
             final.save(os.path.join(media_path, f))
 
             zf = zipfile.ZipFile(zipadr, mode='a')
@@ -209,6 +195,10 @@ def load_url(request, hash):
 
 def StartPage(request):
     if request.method == 'POST':
+            daily_ledger, check = DailyLedger.objects.get_or_create(date=timezone.now().date())
+            daily_ledger.interaction_count += 1
+            daily_ledger.save()
+
             profile, check = Profile.objects.get_or_create(user=request.user)
             form = ScrambleForm(request.POST, request.FILES)
             if form.is_valid():
@@ -249,7 +239,6 @@ def StartPage(request):
                     with open(os.path.join(media_path, 'data'), 'wb') as fp:
                         pickle.dump(formdat, fp)
 
-                    ##add data to session, create url, return page which does ajax call to temp url
                     for f in request.FILES.getlist('images'):
                         image = Image.open(f)
                         image.save(os.path.join(media_path, f.name), format="BMP", subsampling=0, quality=100)
@@ -257,9 +246,15 @@ def StartPage(request):
                         if formdat['mode'] == 'Scramble':
                             profile.scramble_count = profile.scramble_count + 1
                             profile.save()
+
+                            daily_ledger.scram_count += 1
+                            daily_ledger.save()
                         else:
                             profile.unscramble_count = profile.unscramble_count + 1
                             profile.save()
+
+                            daily_ledger.unscram_count += 1
+                            daily_ledger.save()
 
                         profile.total_size_of_uploaded_images = profile.total_size_of_uploaded_images + f.size
                         profile.total_file_count = profile.total_file_count + 1
@@ -268,6 +263,8 @@ def StartPage(request):
                         urlobj.number_of_files = urlobj.number_of_files + 1
                         urlobj.save()
 
+                        daily_ledger.total_files += 1
+                        daily_ledger.save()
 
                     return render(request, "scrambler/download.html", {"dl_url" : url})
 

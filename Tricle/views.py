@@ -6,7 +6,7 @@ from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import post_save
 from django.utils import timezone
 from django.conf import settings
-from scrambler.models import ExpiringURL, Profile, ExpiredURL
+from scrambler.models import ExpiringURL, Profile, ExpiredURL, DailyLedger
 
 from datetime import datetime, timedelta
 
@@ -15,7 +15,10 @@ import shutil
 # Create your views here.
 
 def delete_dir(url):
-    #check if dir is present, delete if it is
+    '''
+    If a tempurl directory is exists, delete it and its contents.
+    '''
+
     if 'temp' in os.listdir(settings.MEDIA_ROOT):
         if url in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
             url_dir = os.path.join(settings.MEDIA_ROOT, 'temp', url)
@@ -25,6 +28,11 @@ def delete_dir(url):
         return
 
 def index(request):
+    '''
+    User login redirects to index, on redirect,
+    create a profile object for the user.
+    '''
+
     if request.user.is_authenticated():
         profile, check = Profile.objects.get_or_create(user=request.user)
         profile.save()
@@ -32,13 +40,30 @@ def index(request):
     return render(request, "index.html")
 
 def updateLastLogin(sender, user, request, **kwargs):
-     profile, check = Profile.objects.get_or_create(user=request.user)
-     profile.last_login = timezone.now()
-     profile.save()
+    '''
+    When a user logs in, the profile is collected, last login is updated.
+    Daily ledger is created or collected, login count is incremented.
+    If it is the users first login of the day, DAU is incremented.
+    '''
+
+    profile, check = Profile.objects.get_or_create(user=request.user)
+    daily_ledger, check = DailyLedger.objects.get_or_create(date=timezone.now().date())
+    daily_ledger.login_count += 1
+    daily_ledger.save()
+
+    if profile.last_login.date() != timezone.now().date():
+        #first login of the day
+        daily_ledger.dau += 1
+
+    profile.last_login = timezone.now()
+    profile.save()
 
 user_logged_in.connect(updateLastLogin)
 
 def stats(request):
+    '''
+    This view extracts all the app data for viewing.
+    '''
 
     context = dict()
 
@@ -65,7 +90,6 @@ def stats(request):
 
     if len(User.objects.all()) > 0:
         for user in User.objects.all():
-            print(user)
             if user.last_login.day == datetime.today().day:
                 context['dau'] = context['dau'] + 1
 
@@ -75,14 +99,30 @@ def stats(request):
             context['total_unscrambles'] = context['total_unscrambles'] + profile.unscramble_count
             context['total_file_count'] = context['total_file_count'] + profile.total_file_count
 
-
+    context['total_file_bytes'] = byteconvert(context['total_file_bytes'])
 
     return render(request, "global.html", context)
 
+def byteconvert(val):
+    '''Converts bytes into a readable format'''
+
+    if val > 1000000000000:
+        return str(val/1000000000000) + " TB"
+    elif val > 1000000000:
+        return str(val/1000000000) + " GB"
+    elif val > 1000000:
+        return str(val/1000000) + " MB"
+    elif val > 1000:
+        return str(val/1000) + " KB"
+    else:
+        return str(val) + " Bytes"
+
 def cleanup(request):
     '''
-    go through expiring, convert to expired, remove from expiring, make sure dir is deleted
+    Go through expiring, convert to expired, remove from expiring, make sure dir is deleted
+    This needs to be performed at least daily. /iaw
     '''
+
     expiring_list = ExpiringURL.objects.all()
 
     for expiring in expiring_list:
@@ -124,8 +164,14 @@ def cleanup(request):
     '''
 
     for tempurl in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
-        if tempurl not in ExpiringURL.objects.all():
+        if not ExpiringURL.objects.filter(url=tempurl).exists():
             delete_dir(tempurl)
+
+    '''
+    create daily ledger if needed
+    '''
+
+    daily_ledger, check = DailyLedger.objects.get_or_create(date=timezone.now().date())
 
     return HttpResponseRedirect("/")
 

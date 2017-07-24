@@ -5,6 +5,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.conf import settings
 
+from datetime import datetime
 # Create your models here.
 
 class Profile(models.Model):
@@ -51,8 +52,15 @@ make notification model
 
 '''
 
+'''
+class Notification(models.Model):
+    message = models.CharField(default=0, max_length=255)
+    start date = datetime models
+    duration = timedelta
+'''
+
 class DailyLedger(models.Model):
-    date = models.DateTimeField(default=timezone.now().date())
+    date = models.DateTimeField(default=timezone.now().date(), unique=True)
     dau = models.IntegerField(default=0)
     interaction_count = models.IntegerField(default=0)
     scram_count = models.IntegerField(default=0)
@@ -61,4 +69,4 @@ class DailyLedger(models.Model):
     login_count = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.date
+        return self.date.strftime("%B %d, %Y")
