@@ -44,12 +44,7 @@ class ExpiredURL(models.Model):
 
 
 '''
-create expiredurl model
-
-populate daily ledger
-
 make notification model
-
 '''
 
 '''

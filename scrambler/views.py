@@ -8,21 +8,17 @@ from django.utils import timezone
 
 from django.contrib.auth.models import User
 from .models import Profile, ExpiringURL, ExpiredURL, DailyLedger
+from .forms import ScrambleForm
+from .scramble import scrambler
 
 from datetime import datetime, timedelta
 from hashlib import sha1
-
 import os
 import pickle
 import shutil
 
-from .forms import ScrambleForm
-from .scramble import scrambler
-
 from PIL import Image
 import zipfile
-# Create your views here.
-
 
 '''
 json respond download link which calls view which returns httpresponse.
@@ -136,8 +132,6 @@ def load_url(request, hash):
     zf = zipfile.ZipFile(zipadr, mode='w')
 
     for f in os.listdir(media_path):
-        #HttpResponse("Aww yeah")
-        print(f.lower())
         if f.lower().endswith(('bmp', 'jpg', 'png')):
             image = Image.open(os.path.join(media_path, f))
 
@@ -163,9 +157,6 @@ def load_url(request, hash):
                 with open(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), urlobj.url, "data"), 'wb') as fp:
                     pickle.dump(form, fp)
 
-
-                ##add encrypted list of keys
-
             final.save(os.path.join(media_path, f))
 
             zf = zipfile.ZipFile(zipadr, mode='a')
@@ -174,18 +165,12 @@ def load_url(request, hash):
             finally:
                 zf.close()
 
-            ####read this file into the ZIP
-
-
     with open(os.path.join(media_path, "marked.txt"),"w+") as f:
         f.write("")
-
-    ##if user.marked, copy temp url dir to user/data/url
 
     response = HttpResponse(open(zipadr, 'rb').read(),
                          content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename=' + zipname
-
 
     return response
 

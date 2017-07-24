@@ -80,24 +80,35 @@ def stats(request):
 
     for expurl in ExpiringURL.objects.all():
         if expurl.created.day == datetime.today().day:
-            context['todays_uploads_count'] = context['todays_uploads_count'] + 1
-            context['todays_file_count'] = context['todays_file_count'] + expurl.number_of_files
+            context['todays_uploads_count'] += 1
+            context['todays_file_count'] += expurl.number_of_files
 
             if expurl.mode == 'Scramble':
-                context['todays_s_count'] = context['todays_s_count'] + expurl.number_of_files
+                context['todays_s_count'] += expurl.number_of_files
             else:
-                context['todays_u_count'] = context['todays_u_count'] + expurl.number_of_files
+                context['todays_u_count'] += expurl.number_of_files
+
+    for expurl in ExpiredURL.objects.all():
+        if expurl.created.day == datetime.today().day:
+            context['todays_uploads_count'] += 1
+            context['todays_file_count'] += expurl.number_of_files
+
+            if expurl.mode == 'Scramble':
+                context['todays_s_count'] += expurl.number_of_files
+            else:
+                context['todays_u_count'] += expurl.number_of_files
+
 
     if len(User.objects.all()) > 0:
         for user in User.objects.all():
             if user.last_login.day == datetime.today().day:
-                context['dau'] = context['dau'] + 1
+                context['dau'] += + 1
 
             profile, check = Profile.objects.get_or_create(user=user)
-            context['total_file_bytes'] = context['total_file_bytes'] + profile.total_size_of_uploaded_images
-            context['total_scrambles'] = context['total_scrambles'] + profile.scramble_count
-            context['total_unscrambles'] = context['total_unscrambles'] + profile.unscramble_count
-            context['total_file_count'] = context['total_file_count'] + profile.total_file_count
+            context['total_file_bytes'] += profile.total_size_of_uploaded_images
+            context['total_scrambles'] += profile.scramble_count
+            context['total_unscrambles'] += profile.unscramble_count
+            context['total_file_count'] += profile.total_file_count
 
     context['total_file_bytes'] = byteconvert(context['total_file_bytes'])
 
