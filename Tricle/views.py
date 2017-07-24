@@ -5,10 +5,24 @@ from django.contrib.auth.models import User
 from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import post_save
 from django.utils import timezone
-from scrambler.models import ExpiringURL, Profile
+from django.conf import settings
+from scrambler.models import ExpiringURL, Profile, ExpiredURL
 
-from datetime import datetime
+from datetime import datetime, timedelta
+
+import os
+import shutil
 # Create your views here.
+
+def delete_dir(url):
+    #check if dir is present, delete if it is
+    if 'temp' in os.listdir(settings.MEDIA_ROOT):
+        if url in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+            url_dir = os.path.join(settings.MEDIA_ROOT, 'temp', url)
+            shutil.rmtree(url_dir)
+            return
+    else:
+        return
 
 def index(request):
     if request.user.is_authenticated():
@@ -64,6 +78,56 @@ def stats(request):
 
 
     return render(request, "global.html", context)
+
+def cleanup(request):
+    '''
+    go through expiring, convert to expired, remove from expiring, make sure dir is deleted
+    '''
+    expiring_list = ExpiringURL.objects.all()
+
+    for expiring in expiring_list:
+        if expiring.expired == True:
+            #move from expiringurls to expiredurls
+            #delete dir if its still there
+            delete_dir(expiring.url)
+            expiredurl, created = ExpiredURL.objects.get_or_create(url=expiring.url)
+            if created == True:
+                expiredurl.created = expiring.created
+                expiredurl.number_of_files = expiring.number_of_files
+                expiredurl.mode = expiring.mode
+                expiredurl.user_name = expiring.user_name
+                expiredurl.save()
+            expiring.delete()
+            pass
+
+        expiration = expiring.created + timedelta(minutes=10)
+
+        if timezone.now() > expiration:
+            #url has expired, mark as expired, delete dirs, redirect to homepage
+            expiring.expired = True
+            expiring.save()
+
+            delete_dir(expiring.url)
+
+            expiredurl, created = ExpiredURL.objects.get_or_create(url=expiring.url)
+            if created == True:
+                expiredurl.created = expiring.created
+                expiredurl.number_of_files = expiring.number_of_files
+                expiredurl.mode = expiring.mode
+                expiredurl.user_name = expiring.user_name
+                expiredurl.save()
+            expiring.delete()
+            #move to expiredurls
+
+    '''
+    go through dir, if not in expiring or expired, delete dir
+    '''
+
+    for tempurl in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+        if tempurl not in ExpiringURL.objects.all():
+            delete_dir(tempurl)
+
+    return HttpResponseRedirect("/")
 
 def ScramRedirect(request):
     return HttpResponseRedirect("/")

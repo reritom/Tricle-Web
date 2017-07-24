@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
 from django.contrib.auth.models import User
-from .models import Profile, ExpiringURL
+from .models import Profile, ExpiringURL, ExpiredURL
 
 from datetime import datetime, timedelta
 from hashlib import sha1
@@ -42,10 +42,11 @@ then create expiredurl object, and delete expiring object
 
 def delete_dir(url):
     #check if dir is present, delete if it is
-    if url in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
-        url_dir = os.path.join(settings.MEDIA_ROOT, 'temp', url)
-        shutil.rmtree(url_dir)
-        return
+    if 'temp' in os.listdir(settings.MEDIA_ROOT):
+        if url in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+            url_dir = os.path.join(settings.MEDIA_ROOT, 'temp', url)
+            shutil.rmtree(url_dir)
+            return
     else:
         return
 
@@ -54,7 +55,6 @@ def load_url(request, hash):
 
     ##check if user is correct user for viewing this
     url = hash
-    print(1)
     if not ExpiringURL.objects.filter(url=url).exists():
         #url doesnt exist, so redirect
         return HttpResponseRedirect('/')
@@ -64,6 +64,14 @@ def load_url(request, hash):
     if urlobj.expired == True:
         #check if it is expired, delete dir, redirect to home
         delete_dir(url)
+        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
+        if created == True:
+            expiredurl.created = urlobj.created
+            expiredurl.number_of_files = urlobj.number_of_files
+            expiredurl.mode = urlobj.mode
+            expiredurl.user_name = urlobj.user_name
+            expiredurl.save()
+        urlobj.delete()
         return HttpResponseRedirect('/')
 
     expiration = urlobj.created + timedelta(minutes=10)
@@ -74,12 +82,28 @@ def load_url(request, hash):
         urlobj.save()
 
         delete_dir(url)
+        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
+        if created == True:
+            expiredurl.created = urlobj.created
+            expiredurl.number_of_files = urlobj.number_of_files
+            expiredurl.mode = urlobj.mode
+            expiredurl.user_name = urlobj.user_name
+            expiredurl.save()
+        urlobj.delete()
         return HttpResponseRedirect('/')
 
 
-    if url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+    if urlobj.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
         urlobj.expired = True
         urlobj.save()
+        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
+        if created == True:
+            expiredurl.created = urlobj.created
+            expiredurl.number_of_files = urlobj.number_of_files
+            expiredurl.mode = urlobj.mode
+            expiredurl.user_name = urlobj.user_name
+            expiredurl.save()
+        urlobj.delete()
         return HttpResponseRedirect('/')
 
     if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
@@ -237,7 +261,7 @@ def StartPage(request):
                             profile.unscramble_count = profile.unscramble_count + 1
                             profile.save()
 
-                        profile.total_size_of_uploaded_images = profile.total_size_of_uploaded_images + os.path.getsize(os.path.join(media_path, f.name))
+                        profile.total_size_of_uploaded_images = profile.total_size_of_uploaded_images + f.size
                         profile.total_file_count = profile.total_file_count + 1
                         profile.save()
 

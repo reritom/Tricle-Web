@@ -31,4 +31,5 @@ urlpatterns = [
     url(r'global/$', views.stats, name='global'),
     url(r'about/$', views.AboutPage.as_view(), name='about'),
     url(r'^scrambler/$', views.ScramRedirect),
+    url(r'^iaw/$', views.cleanup, name="cleanup"),
 ]
