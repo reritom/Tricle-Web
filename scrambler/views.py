@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.models import User
 from .models import Profile, ExpiringURL, ExpiredURL, DailyLedger
@@ -25,6 +26,20 @@ json respond download link which calls view which returns httpresponse.
 when json respondes, change download button.
 '''
 
+def byteconvert(val):
+    '''Converts bytes into a readable format'''
+
+    if val > 1000000000000:
+        return str(val/1000000000000) + " TB"
+    elif val > 1000000000:
+        return str(val/1000000000) + " GB"
+    elif val > 1000000:
+        return str(val/1000000) + " MB"
+    elif val > 1000:
+        return str(val/1000) + " KB"
+    else:
+        return str(val) + " Bytes"
+
 def delete_dir(url):
     #check if dir is present, delete if it is
     if 'temp' in os.listdir(settings.MEDIA_ROOT):
@@ -44,9 +59,16 @@ def load_url(request, hash):
         #url doesnt exist, so redirect
         return HttpResponseRedirect('/')
 
+
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/')
+
     urlobj = ExpiringURL.objects.get(url=url)
 
+    print(1)
+
     if urlobj.expired == True:
+        print(2)
         #check if it is expired, delete dir, redirect to home
         delete_dir(url)
         expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
@@ -59,9 +81,11 @@ def load_url(request, hash):
         urlobj.delete()
         return HttpResponseRedirect('/')
 
-    expiration = urlobj.created + timedelta(minutes=10)
+    print(3)
+    expiration = urlobj.created + timedelta(minutes=settings.EXPIRATION_TIME_LIMIT)
 
     if timezone.now() > expiration:
+        print(4)
         #url has expired, mark as expired, delete dirs, redirect to homepage
         urlobj.expired = True
         urlobj.save()
@@ -179,6 +203,9 @@ def load_url(request, hash):
 
 
 def StartPage(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/')
+
     if request.method == 'POST':
             daily_ledger, check = DailyLedger.objects.get_or_create(date=timezone.now().date())
             daily_ledger.interaction_count += 1
@@ -262,6 +289,8 @@ def StartPage(request):
 
     return render(request, 'scrambler/start.html', {'form': form })
 
+@login_required
+def AccountPage(request):
+    n_o_b_u = byteconvert(request.user.profile.total_size_of_uploaded_images)
 
-class AccountPage(LoginRequiredMixin, TemplateView):
-    template_name = 'scrambler/account.html'
+    return render(request, 'scrambler/account.html', {'n_o_b_u': n_o_b_u })

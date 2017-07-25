@@ -50,7 +50,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.AutoLogout',
 ]
+
+AUTO_LOGOUT_DELAY = 20
+USE_TZ = True
+
+EXPIRATION_TIME_LIMIT = 20
 
 ROOT_URLCONF = 'Tricle.urls'
 

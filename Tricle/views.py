@@ -14,6 +14,20 @@ import os
 import shutil
 # Create your views here.
 
+def byteconvert(val):
+    '''Converts bytes into a readable format'''
+
+    if val > 1000000000000:
+        return str(val/1000000000000) + " TB"
+    elif val > 1000000000:
+        return str(val/1000000000) + " GB"
+    elif val > 1000000:
+        return str(val/1000000) + " MB"
+    elif val > 1000:
+        return str(val/1000) + " KB"
+    else:
+        return str(val) + " Bytes"
+
 def delete_dir(url):
     '''
     If a tempurl directory is exists, delete it and its contents.
@@ -114,20 +128,6 @@ def stats(request):
 
     return render(request, "global.html", context)
 
-def byteconvert(val):
-    '''Converts bytes into a readable format'''
-
-    if val > 1000000000000:
-        return str(val/1000000000000) + " TB"
-    elif val > 1000000000:
-        return str(val/1000000000) + " GB"
-    elif val > 1000000:
-        return str(val/1000000) + " MB"
-    elif val > 1000:
-        return str(val/1000) + " KB"
-    else:
-        return str(val) + " Bytes"
-
 def cleanup(request):
     '''
     Go through expiring, convert to expired, remove from expiring, make sure dir is deleted
@@ -151,7 +151,7 @@ def cleanup(request):
             expiring.delete()
             pass
 
-        expiration = expiring.created + timedelta(minutes=10)
+        expiration = expiring.created + timedelta(minutes=settings.EXPIRATION_TIME_LIMIT)
 
         if timezone.now() > expiration:
             #url has expired, mark as expired, delete dirs, redirect to homepage
