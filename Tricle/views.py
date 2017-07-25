@@ -198,8 +198,11 @@ class PrivacyPage(TemplateView):
 class TestPage(TemplateView):
     template_name = 'test.html'
 
-class ThanksPage(TemplateView):
+def ThanksPage(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/')
     template_name = 'thanks.html'
+    return render(request, template_name)
 
 class AboutPage(TemplateView):
     template_name = 'about.html'
