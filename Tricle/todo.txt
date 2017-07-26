@@ -1,9 +1,12 @@
 
 
-- Change account page so that bytes are converted to readable format
+x Change account page so that bytes are converted to readable format
 - css redesign
-- change user details page
-- set up JsonResponse
+x change user details page
+x set up JsonResponse
 - cron task for /iaw
 - make global use daily ledger instead of expiring urls
 - make notification class. In index, if date is within notif range, pass notif info in context_dict and present in alert (for maintenance and stuff)
+- outgoing link models
+- email setup
+- activation email

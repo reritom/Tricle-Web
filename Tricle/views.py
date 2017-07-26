@@ -65,9 +65,15 @@ def updateLastLogin(sender, user, request, **kwargs):
     daily_ledger.login_count += 1
     daily_ledger.save()
 
+    print("last: ", profile.last_login.date())
+    print("today: ", timezone.now().date())
+
     if profile.last_login.date() != timezone.now().date():
+        print("comp true")
         #first login of the day
+        print(daily_ledger.dau)
         daily_ledger.dau += 1
+        daily_ledger.save()
 
     profile.last_login = timezone.now()
     profile.save()
