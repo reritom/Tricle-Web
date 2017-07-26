@@ -8,30 +8,52 @@
 {% block content_block %}
 <div class="container">
   <div class="jumbotron" style="background-color: #EFF7F6; text-align: center;">
-  <h3>Please wait while we prepare your download</h3>
-  <h3> {{ dl_url }}</h3>
+  <h3 id="note">Please wait while we prepare your download</h3>
+  <!--<h3> {{ dl_url }}</h3>-->
   </div>
 </div>
 
 <div class="container">
   <div class="jumbotron">
     <button type="button" id="downdis" class="btn btn-lg btn-primary btn-block disabled" name="button"><i class="fa fa-cog fa-2x slow-spin fa-spin"></i></button>
-    <button type="button" id="downen" style="display: none;" class="btn btn-lg btn-success btn-block enabled" name="button"><i class="fa fa-arrow-circle-o-down fa-2x"></i></button>
-
-
+    <a id="downen_link" style="display: none;" href="{% url 'scrambler:down' hash=dl_url %}" style="font-decoration: none;">
+    <button type="button" id="downen" class="btn btn-lg btn-success btn-block enabled" name="button"><i class="fa fa-arrow-circle-o-down fa-2x"></i></button>
+  </a>
   </div>
 </div>
+
+<div class="container" style="display:none;">
+  <div class="jumbotron">
+    <a id="runProc" href='{% url 'scrambler:url' hash=dl_url %}'>
+    <button  type="button" name="button">Click to run process</button>
+    </a>
+  </div>
+</div>
+
+<div class="container" style="display: none;">
+  <div class="jumbotron">
+    <a href="{% url 'scrambler:down' hash=dl_url %}">
+    <button id="downProc" type="button"  name="button">Click to download</button>
+    </a>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block js_block %}
 <script type="text/javascript">
     $( document ).ready(function() {
       $.ajax({
-        url: form.attr("data-validate-email-url"),
-        data: form.serialize(),
+        url: $('#runProc').attr("href"),
         dataType: 'json',
         success: function (data) {
-          if (data.is_taken) {
+          if (data.proc) {
+            $('#note').text("Your download is ready");
+            $('#downdis').css("display", "none");
+            $('#downen_link').css("display", "block");
+
+            $('#downen_link')[0].click();
+
             }
         else {
           }

@@ -14,24 +14,25 @@ class AutoLogout(object):
         def process_request(self, request):
             if not request.user.is_authenticated() :
                 #Can't log out if not logged in
-                print("not logged in")
+                #print("not logged in")
                 return
 
             try:
                 parsed = dateutil.parser.parse(request.session['last_touch'])
 
                 if parsed + timedelta( 0, settings.AUTO_LOGOUT_DELAY * 60, 0) < timezone.now():
-                    print("last: " + request.session['last_touch'])
-                    print("cur: " + timezone.now().isoformat())
-                    print("user logged out")
+                    #print("last: " + request.session['last_touch'])
+                    #print("cur: " + timezone.now().isoformat())
+                    #print("user logged out")
 
                     del request.session['last_touch']
                     auth.logout(request)
                     return HttpResponseRedirect('/')
                 else:
-                    print("last: " + request.session['last_touch'])
-                    print("cur: " + timezone.now().isoformat())
-                    print("still active")
+                    #print("last: " + request.session['last_touch'])
+                    #print("cur: " + timezone.now().isoformat())
+                    #print("still active")
+                    pass
 
             except KeyError:
                 pass

@@ -50,9 +50,7 @@ def delete_dir(url):
     else:
         return
 
-def load_url(request, hash):
-    #url = get_object_or_404(TempUrl, url_hash=hash, expires__gte=datetime.now())
-
+def download_url(request, hash):
     ##check if user is correct user for viewing this
     url = hash
     if not ExpiringURL.objects.filter(url=url).exists():
@@ -65,10 +63,7 @@ def load_url(request, hash):
 
     urlobj = ExpiringURL.objects.get(url=url)
 
-    print(1)
-
     if urlobj.expired == True:
-        print(2)
         #check if it is expired, delete dir, redirect to home
         delete_dir(url)
         expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
@@ -81,11 +76,9 @@ def load_url(request, hash):
         urlobj.delete()
         return HttpResponseRedirect('/')
 
-    print(3)
     expiration = urlobj.created + timedelta(minutes=settings.EXPIRATION_TIME_LIMIT)
 
     if timezone.now() > expiration:
-        print(4)
         #url has expired, mark as expired, delete dirs, redirect to homepage
         urlobj.expired = True
         urlobj.save()
@@ -125,10 +118,78 @@ def load_url(request, hash):
                              content_type='application/zip')
         response['Content-Disposition'] = 'attachment; filename=' + prezipped
 
-        for users in User.objects.all():
-            Profile.objects.get_or_create(user=users)
-
         return response
+
+    else:
+        return HttpResponse("Not processed")
+
+def load_url(request, hash):
+    print("jibberjabber")
+    #url = get_object_or_404(TempUrl, url_hash=hash, expires__gte=datetime.now())
+
+    ##check if user is correct user for viewing this
+    url = hash
+    if not ExpiringURL.objects.filter(url=url).exists():
+        #url doesnt exist, so redirect
+        return HttpResponseRedirect('/')
+
+
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/')
+
+    urlobj = ExpiringURL.objects.get(url=url)
+
+    if urlobj.expired == True:
+        #check if it is expired, delete dir, redirect to home
+        delete_dir(url)
+        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
+        if created == True:
+            expiredurl.created = urlobj.created
+            expiredurl.number_of_files = urlobj.number_of_files
+            expiredurl.mode = urlobj.mode
+            expiredurl.user_name = urlobj.user_name
+            expiredurl.save()
+        urlobj.delete()
+        return HttpResponseRedirect('/')
+
+    expiration = urlobj.created + timedelta(minutes=settings.EXPIRATION_TIME_LIMIT)
+
+    if timezone.now() > expiration:
+        #url has expired, mark as expired, delete dirs, redirect to homepage
+        urlobj.expired = True
+        urlobj.save()
+
+        delete_dir(url)
+        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
+        if created == True:
+            expiredurl.created = urlobj.created
+            expiredurl.number_of_files = urlobj.number_of_files
+            expiredurl.mode = urlobj.mode
+            expiredurl.user_name = urlobj.user_name
+            expiredurl.save()
+        urlobj.delete()
+        return HttpResponseRedirect('/')
+
+
+    if urlobj.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+        urlobj.expired = True
+        urlobj.save()
+        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
+        if created == True:
+            expiredurl.created = urlobj.created
+            expiredurl.number_of_files = urlobj.number_of_files
+            expiredurl.mode = urlobj.mode
+            expiredurl.user_name = urlobj.user_name
+            expiredurl.save()
+        urlobj.delete()
+        return HttpResponseRedirect('/')
+
+    if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
+        data = dict()
+        data['url'] = url
+        data['well'] = 'done'
+        data['proc'] = True
+        return JsonResponse(data)
 
     '''If marked.txt isnt in dir, and .zip is, then process broke, abort entire thing
         mark it as expired, mark it as damaged, and delete dir'''
@@ -192,14 +253,11 @@ def load_url(request, hash):
     with open(os.path.join(media_path, "marked.txt"),"w+") as f:
         f.write("")
 
-    response = HttpResponse(open(zipadr, 'rb').read(),
-                         content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename=' + zipname
-
-    return response
-
-    #return HttpResponse(url)
-    #return JsonResponse(data)
+    data = dict()
+    data['url'] = url
+    data['well'] = 'done'
+    data['proc'] = True
+    return JsonResponse(data)
 
 
 def StartPage(request):
