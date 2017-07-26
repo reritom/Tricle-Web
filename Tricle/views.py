@@ -170,13 +170,18 @@ def cleanup(request):
             expiring.delete()
             #move to expiredurls
 
+        if expiring.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+            delete_dir(expiring.url)
+
+
+
     '''
     go through dir, if not in expiring or expired, delete dir
     '''
-
-    for tempurl in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
-        if not ExpiringURL.objects.filter(url=tempurl).exists():
-            delete_dir(tempurl)
+    if 'temp' in os.listdir(settings.MEDIA_ROOT):
+        for tempurl in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+            if not ExpiringURL.objects.filter(url=tempurl).exists():
+                delete_dir(tempurl)
 
     '''
     create daily ledger if needed
