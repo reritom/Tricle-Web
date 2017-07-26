@@ -175,9 +175,9 @@ def cleanup(request):
                 expiredurl.save()
             expiring.delete()
             #move to expiredurls
-
-        if expiring.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
-            delete_dir(expiring.url)
+        if 'temp' in os.listdir(settings.MEDIA_ROOT):
+            if expiring.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
+                delete_dir(expiring.url)
 
 
 
