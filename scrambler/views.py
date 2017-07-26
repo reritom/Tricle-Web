@@ -242,7 +242,11 @@ def load_url(request, hash):
                 with open(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), urlobj.url, "data"), 'wb') as fp:
                     pickle.dump(form, fp)
 
-            final.save(os.path.join(media_path, f))
+            if form['mode'] == "Scramble":
+                final.save(os.path.join(media_path, f), format="BMP", subsampling=0, quality=100)
+            else:
+                final.save(os.path.join(media_path, f), format="JPEG", subsampling=0, quality=100)
+
 
             zf = zipfile.ZipFile(zipadr, mode='a')
             try:
