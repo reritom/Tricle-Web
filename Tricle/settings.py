@@ -23,11 +23,11 @@ TEMPLATE_DIR =os.path.join(BASE_DIR, 'templates')
 SECRET_KEY = '&=c(xa#oww-apg3$qnc8$mo*99yti*!rkz0aymemcwp*gi)@n='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = []
 
-#ALLOWED_HOSTS = ['reritom.pythonanywhere.com']
+ALLOWED_HOSTS = ['reritom.pythonanywhere.com']
 
 
 # Application definition
