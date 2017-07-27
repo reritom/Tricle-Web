@@ -55,10 +55,11 @@ MIDDLEWARE = [
     'accounts.middleware.AutoLogout',
 ]
 
-AUTO_LOGOUT_DELAY = 20
-USE_TZ = True
 
+USE_TZ = True
+AUTO_LOGOUT_DELAY = 20
 EXPIRATION_TIME_LIMIT = 10
+DOWNLOAD_LIMIT = 3
 
 ROOT_URLCONF = 'Tricle.urls'
 

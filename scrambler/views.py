@@ -50,6 +50,18 @@ def delete_dir(url):
     else:
         return
 
+def expire_url(url):
+    delete_dir(url)
+    urlobj = ExpiringURL.objects.get(url=url)
+    expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
+    if created == True:
+        expiredurl.created = urlobj.created
+        expiredurl.number_of_files = urlobj.number_of_files
+        expiredurl.mode = urlobj.mode
+        expiredurl.user_name = urlobj.user_name
+        expiredurl.save()
+    urlobj.delete()
+
 def download_url(request, hash):
     ##check if user is correct user for viewing this
     url = hash
@@ -63,49 +75,38 @@ def download_url(request, hash):
 
     urlobj = ExpiringURL.objects.get(url=url)
 
+    profile, check = Profile.objects.get_or_create(user=request.user)
+
+    if profile.last_login > urlobj.created:
+        #to prevent stolen credentials being used to download data after the legit user
+        #has uploaded it
+        expire_url(urlobj.url)
+        return HttpResponseRedirect('/')
+
+    if urlobj.down_count >= settings.DOWNLOAD_LIMIT:
+        #to limit number of download attempts, for security
+        expire_url(urlobj.url)
+        return HttpResponseRedirect('/')
+    else:
+        urlobj.down_count += 1
+        urlobj.save()
+
+
     if urlobj.expired == True:
         #check if it is expired, delete dir, redirect to home
-        delete_dir(url)
-        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
-        if created == True:
-            expiredurl.created = urlobj.created
-            expiredurl.number_of_files = urlobj.number_of_files
-            expiredurl.mode = urlobj.mode
-            expiredurl.user_name = urlobj.user_name
-            expiredurl.save()
-        urlobj.delete()
+        expire_url(urlobj.url)
         return HttpResponseRedirect('/')
 
     expiration = urlobj.created + timedelta(minutes=settings.EXPIRATION_TIME_LIMIT)
 
     if timezone.now() > expiration:
         #url has expired, mark as expired, delete dirs, redirect to homepage
-        urlobj.expired = True
-        urlobj.save()
-
-        delete_dir(url)
-        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
-        if created == True:
-            expiredurl.created = urlobj.created
-            expiredurl.number_of_files = urlobj.number_of_files
-            expiredurl.mode = urlobj.mode
-            expiredurl.user_name = urlobj.user_name
-            expiredurl.save()
-        urlobj.delete()
+        expire_url(urlobj.url)
         return HttpResponseRedirect('/')
 
 
     if urlobj.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
-        urlobj.expired = True
-        urlobj.save()
-        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
-        if created == True:
-            expiredurl.created = urlobj.created
-            expiredurl.number_of_files = urlobj.number_of_files
-            expiredurl.mode = urlobj.mode
-            expiredurl.user_name = urlobj.user_name
-            expiredurl.save()
-        urlobj.delete()
+        expire_url(urlobj.url)
         return HttpResponseRedirect('/')
 
     if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
@@ -124,8 +125,6 @@ def download_url(request, hash):
         return HttpResponse("Not processed")
 
 def load_url(request, hash):
-    print("jibberjabber")
-    #url = get_object_or_404(TempUrl, url_hash=hash, expires__gte=datetime.now())
 
     ##check if user is correct user for viewing this
     url = hash
@@ -141,47 +140,19 @@ def load_url(request, hash):
 
     if urlobj.expired == True:
         #check if it is expired, delete dir, redirect to home
-        delete_dir(url)
-        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
-        if created == True:
-            expiredurl.created = urlobj.created
-            expiredurl.number_of_files = urlobj.number_of_files
-            expiredurl.mode = urlobj.mode
-            expiredurl.user_name = urlobj.user_name
-            expiredurl.save()
-        urlobj.delete()
+        expire_url(urlobj.url)
         return HttpResponseRedirect('/')
 
     expiration = urlobj.created + timedelta(minutes=settings.EXPIRATION_TIME_LIMIT)
 
     if timezone.now() > expiration:
         #url has expired, mark as expired, delete dirs, redirect to homepage
-        urlobj.expired = True
-        urlobj.save()
-
-        delete_dir(url)
-        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
-        if created == True:
-            expiredurl.created = urlobj.created
-            expiredurl.number_of_files = urlobj.number_of_files
-            expiredurl.mode = urlobj.mode
-            expiredurl.user_name = urlobj.user_name
-            expiredurl.save()
-        urlobj.delete()
+        expire_url(urlobj.url)
         return HttpResponseRedirect('/')
 
 
     if urlobj.url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
-        urlobj.expired = True
-        urlobj.save()
-        expiredurl, created = ExpiredURL.objects.get_or_create(url=urlobj.url)
-        if created == True:
-            expiredurl.created = urlobj.created
-            expiredurl.number_of_files = urlobj.number_of_files
-            expiredurl.mode = urlobj.mode
-            expiredurl.user_name = urlobj.user_name
-            expiredurl.save()
-        urlobj.delete()
+        expire_url(urlobj.url)
         return HttpResponseRedirect('/')
 
     if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):

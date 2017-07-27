@@ -27,6 +27,7 @@ class ExpiringURL(models.Model):
     number_of_files = models.IntegerField(default=0)
     user_name = models.CharField(default=0, max_length=255)
     mode = models.CharField(default="Scramble", max_length=255)
+    down_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.url

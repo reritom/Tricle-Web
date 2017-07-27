@@ -10,3 +10,5 @@ x set up JsonResponse
 - outgoing link models
 - email setup
 - activation email
+
+- Make new index, move current index to /scrambler
