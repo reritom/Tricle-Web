@@ -62,6 +62,18 @@ def expire_url(url):
         expiredurl.save()
     urlobj.delete()
 
+def done_url(request, hash):
+    url = hash
+
+    if not ExpiringURL.objects.filter(url=url).exists():
+        #url doesnt exist, so redirect
+        return HttpResponseRedirect('/')
+
+    expire_url(url)
+    return HttpResponseRedirect('/')
+
+    pass
+
 def download_url(request, hash):
     ##check if user is correct user for viewing this
     url = hash

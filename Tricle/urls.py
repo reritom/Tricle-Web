@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^privacy$', views.PrivacyPage.as_view(), name='privacy'),
     url(r'contact/$', views.ContactPage.as_view(), name='contact'),
     url(r'global/$', views.stats, name='global'),
+    url(r'go/$', views.GettingStarted.as_view(), name='go'),
     url(r'about/$', views.AboutPage.as_view(), name='about'),
     url(r'^scrambler/$', views.ScramRedirect),
     url(r'^iaw/$', views.cleanup, name="cleanup"),

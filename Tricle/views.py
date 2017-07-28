@@ -211,3 +211,6 @@ class TestPage(TemplateView):
 
 class AboutPage(TemplateView):
     template_name = 'about.html'
+
+class GettingStarted(TemplateView):
+    template_name = 'getstarted.html'

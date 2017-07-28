@@ -19,6 +19,12 @@
   </div>
 </div>
 
+<div id="jsal3" class="container">
+  <div class="alert alert-danger">
+    After you have downloaded your file, change it to /scrambler/done/{{dl_url}}
+  </div>
+</div>
+
 <div class="container">
   <div class="jumbotron" style="background-color: #EFF7F6; text-align: center;">
   <h3 id="note">Please wait while we prepare your download</h3>
@@ -28,10 +34,17 @@
 
 <div class="container">
   <div class="jumbotron">
-    <button type="button" id="downdis" class="btn btn-lg btn-primary btn-block disabled" name="button"><i class="fa fa-cog fa-2x slow-spin fa-spin"></i></button>
+      <button type="button" id="downdis" class="btn btn-lg btn-primary btn-block disabled" name="button"><i class="fa fa-cog fa-2x slow-spin fa-spin"></i></button>
+
     <a id="downen_link" style="display: none;" href="{% url 'scrambler:down' hash=dl_url %}" style="font-decoration: none;">
-    <button type="button" id="downen" class="btn btn-lg btn-success btn-block enabled" name="button"><i class="fa fa-arrow-circle-o-down fa-2x"></i></button>
+    <button type="button" id="downen" class="btn btn-lg btn-success btn-block enabled" name="button">click here if download doesnt automatically start<i class="fa fa-arrow-circle-o-down fa-2x"></i></button>
   </a>
+
+  <br>
+
+  <a id="done_link" style="display: none;" href="{% url 'scrambler:done' hash=dl_url %}" style="font-decoration: none;">
+  <button type="button" id="done" class="btn btn-lg btn-primary btn-block enabled" name="button">downloaded? click here to clear your files from the server<i class="fa fa-check-circle-o fa-2x"></i></button>
+</a>
   </div>
 </div>
 
@@ -64,6 +77,7 @@
             $('#note').text("Your download is ready");
             $('#downdis').css("display", "none");
             $('#downen_link').css("display", "block");
+            $('#done_link').css("display", "block");
 
             $('#downen_link')[0].click();
 
@@ -78,5 +92,6 @@
 <script type="text/javascript">
   $('#jsal1').css("display", "none");
     $('#jsal2').css("display", "none");
+      $('#jsal3').css("display", "none");
 </script>
 {% endblock %}

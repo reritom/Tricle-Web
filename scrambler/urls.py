@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^account/$', views.AccountPage, name='account'),
     url(r'^(?P<hash>\w+)/$', views.load_url, name="url"),
     url(r'^down/(?P<hash>\w+)/$', views.download_url, name="down"),
+    url(r'^done/(?P<hash>\w+)/$', views.done_url, name="done"),
 ]
