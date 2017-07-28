@@ -30,6 +30,13 @@ DEBUG = False
 ALLOWED_HOSTS = ['reritom.pythonanywhere.com']
 
 
+'''
+FOR DEPLOYMENT:
+CHANGE ALLOWED HOSTS
+TURN OFF DEBUG
+CHANGE STATICFILES_DIRS TO STATIC_ROOT
+'''
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -136,7 +143,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'thanks'
+LOGOUT_REDIRECT_URL = 'accounts:thanks'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
