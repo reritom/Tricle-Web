@@ -37,13 +37,40 @@
       <button type="button" id="downdis" class="btn btn-lg btn-primary btn-block disabled" name="button"><i class="fa fa-cog fa-2x slow-spin fa-spin"></i></button>
 
     <a id="downen_link" style="display: none;" href="{% url 'scrambler:down' hash=dl_url %}" style="font-decoration: none;">
-    <button type="button" id="downen" class="btn btn-lg btn-success btn-block enabled" name="button">click here if download doesnt automatically start<i class="fa fa-arrow-circle-o-down fa-2x"></i></button>
+    <button type="button" id="downen" class="btn btn-lg btn-success btn-block enabled" name="button">
+
+
+
+      <div class="row">
+        <div class="col-xs-4">
+            <i class="fa fa-arrow-circle-o-down fa-2x"></i>
+        </div>
+        <div class="col-xs-8" style="text-align: left; padding-top:5px;">
+           <strong>Click here</strong> if the download doesn't automatically start
+          </div>
+
+      </div>
+
+
+    </button>
   </a>
 
   <br>
 
   <a id="done_link" style="display: none;" href="{% url 'scrambler:done' hash=dl_url %}" style="font-decoration: none;">
-  <button type="button" id="done" class="btn btn-lg btn-primary btn-block enabled" name="button">downloaded? click here to clear your files from the server<i class="fa fa-check-circle-o fa-2x"></i></button>
+  <button type="button" id="done" class="btn btn-lg btn-primary btn-block enabled" name="button">
+    <div class="row">
+      <div class="col-xs-4">
+        <i class="fa fa-check-circle-o fa-2x"></i>
+      </div>
+      <div class="col-xs-8" style="text-align: left; padding-top:5px;">
+            <strong>Downloaded?</strong> Click here to clear your files from the server
+        </div>
+
+    </div>
+
+
+  </button>
 </a>
   </div>
 </div>

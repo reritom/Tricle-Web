@@ -27,7 +27,9 @@ DEBUG = False
 
 #ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ['tricle.xyz']
+ALLOWED_HOSTS = ['tricle.xyz',
+                'www.tricle.xyz',
+                'reritom.pythonanywhere.com']
 
 
 '''
