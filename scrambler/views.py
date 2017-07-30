@@ -14,6 +14,7 @@ from .scramble import scrambler
 
 from datetime import datetime, timedelta
 from hashlib import sha1
+from pathlib import Path
 import os
 import pickle
 import shutil
@@ -124,7 +125,7 @@ def download_url(request, hash):
     if "marked.txt" not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
         return HttpResponse("Not processed")
 
-
+    '''
     if "single.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
         #look for single image in urldir
         for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
@@ -136,6 +137,12 @@ def download_url(request, hash):
         for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
             if files.lower().endswith(('.zip')):
                 prezipped = files
+
+    '''
+
+    for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
+        if files.lower().endswith(('.zip')):
+            prezipped = files
 
     prezipped_address = os.path.join(settings.MEDIA_ROOT, 'temp', url, prezipped)
     response = HttpResponse(open(prezipped_address, 'rb').read(),
@@ -204,7 +211,8 @@ def load_url(request, hash):
         ###change so that it checks if DIR exists, then redirects if it doesnt
 
 
-    print(os.listdir(media_path))
+
+    '''
 
     lone = False
     if "single.txt" in os.listdir(media_path):
@@ -216,6 +224,13 @@ def load_url(request, hash):
         zipname = user + "_" + timehash + ".zip"
         zipadr = os.path.join(media_path, zipname)
         zf = zipfile.ZipFile(zipadr, mode='w')
+
+    '''
+
+    timehash = sha1(str(datetime.now().isoformat()).encode("UTF-8")).hexdigest()[:5]
+    zipname = user + "_" + timehash + ".zip"
+    zipadr = os.path.join(media_path, zipname)
+    zf = zipfile.ZipFile(zipadr, mode='w')
 
     for f in os.listdir(media_path):
         if f.lower().endswith(('bmp', 'jpg', 'png', 'jpeg')):
@@ -243,15 +258,25 @@ def load_url(request, hash):
                 with open(os.path.join(settings.MEDIA_ROOT, 'users', user, datetime.now().strftime('%Y-%m-%d'), urlobj.url, "data"), 'wb') as fp:
                     pickle.dump(form, fp)
 
-            if form['mode'] == "Scramble":
-                final.save(os.path.join(media_path, f), format="BMP", subsampling=0, quality=100)
-            else:
-                final.save(os.path.join(media_path, f), format="JPEG", subsampling=0, quality=100)
 
-            if not lone:
+
+
+
+            if form['mode'] == "Scramble":
+                name = str(Path(f).with_suffix('')) + ".BMP"
+                final.save(os.path.join(media_path, name))
+                print("S-NAME: ", name)
+            else:
+                name = str(Path(f).with_suffix('')) + ".JPG"
+                final.save(os.path.join(media_path, name), format="JPEG", subsampling=0, quality=100)
+
+                print("U-NAME: ", name)
+
+            #if not lone:
+            if True:
                 zf = zipfile.ZipFile(zipadr, mode='a')
                 try:
-                    zf.write(os.path.join(media_path, f), arcname=f)
+                    zf.write(os.path.join(media_path, name), arcname=name)
                 finally:
                     zf.close()
 
@@ -325,7 +350,7 @@ def StartPage(request):
 
                     for f in request.FILES.getlist('images'):
                         image = Image.open(f)
-                        image.save(os.path.join(media_path, f.name), format="BMP", subsampling=0, quality=100)
+                        image.save(os.path.join(media_path, f.name), subsampling=0, quality=100)
 
                         if formdat['mode'] == 'Scramble':
                             profile.scramble_count = profile.scramble_count + 1
