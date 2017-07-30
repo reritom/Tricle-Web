@@ -128,7 +128,7 @@ def download_url(request, hash):
     if "single.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
         #look for single image in urldir
         for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
-            if files.lower().endswith(('bmp', 'jpg', 'png')):
+            if files.lower().endswith(('bmp', 'jpg', 'png', 'jpeg')):
                 prezipped = files
 
     else:
@@ -218,7 +218,7 @@ def load_url(request, hash):
         zf = zipfile.ZipFile(zipadr, mode='w')
 
     for f in os.listdir(media_path):
-        if f.lower().endswith(('bmp', 'jpg', 'png')):
+        if f.lower().endswith(('bmp', 'jpg', 'png', 'jpeg')):
             image = Image.open(os.path.join(media_path, f))
 
             final = scrambler(form['mode'], form['k1'], form['k2'], form['k3'], image)
@@ -311,7 +311,12 @@ def StartPage(request):
                     if url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
                         os.mkdir(os.path.join(settings.MEDIA_ROOT, 'temp', url))
 
-                    if len(request.FILES.getlist('images')) == 1:
+                    imcount = 0
+                    for f in request.FILES.getlist('images'):
+                        if f.name.lower().endswith(('.jpg', '.bmp', '.png')):
+                            imcount += 1
+
+                    if imcount == 1:
                         with open(os.path.join(media_path, "single.txt"),"w+") as f:
                             f.write("")
                         print("ONLY ONE IMAGE")
