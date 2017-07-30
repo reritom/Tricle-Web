@@ -27,9 +27,9 @@ SECRET_KEY = '&=c(xa#oww-apg3$qnc8$mo*99yti*!rkz0aymemcwp*gi)@n='
 
 
 
-DEPLOY = True
+DEPLOYSTAT = True
 
-if DEPLOY == True:
+if DEPLOYSTAT == True:
     ALLOWED_HOSTS = ['tricle.xyz',
                     'www.tricle.xyz',
                     'reritom.pythonanywhere.com']

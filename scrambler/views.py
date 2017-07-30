@@ -313,13 +313,12 @@ def StartPage(request):
 
                     imcount = 0
                     for f in request.FILES.getlist('images'):
-                        if f.name.lower().endswith(('.jpg', '.bmp', '.png')):
+                        if f.name.lower().endswith(('.jpg', '.bmp', '.png', '.jpeg')):
                             imcount += 1
 
                     if imcount == 1:
                         with open(os.path.join(media_path, "single.txt"),"w+") as f:
                             f.write("")
-                        print("ONLY ONE IMAGE")
 
                     with open(os.path.join(media_path, 'data'), 'wb') as fp:
                         pickle.dump(formdat, fp)
