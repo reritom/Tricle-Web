@@ -314,6 +314,7 @@ def StartPage(request):
                     if len(request.FILES.getlist('images')) == 1:
                         with open(os.path.join(media_path, "single.txt"),"w+") as f:
                             f.write("")
+                        print("ONLY ONE IMAGE")
 
                     with open(os.path.join(media_path, 'data'), 'wb') as fp:
                         pickle.dump(formdat, fp)

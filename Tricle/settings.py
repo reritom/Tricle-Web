@@ -23,13 +23,23 @@ TEMPLATE_DIR =os.path.join(BASE_DIR, 'templates')
 SECRET_KEY = '&=c(xa#oww-apg3$qnc8$mo*99yti*!rkz0aymemcwp*gi)@n='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
-#ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ['tricle.xyz',
-                'www.tricle.xyz',
-                'reritom.pythonanywhere.com']
+
+
+DEPLOY = False
+
+if DEPLOY == True:
+    ALLOWED_HOSTS = ['tricle.xyz',
+                    'www.tricle.xyz',
+                    'reritom.pythonanywhere.com']
+    DEBUG = False
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+else:
+    ALLOWED_HOSTS = []
+    DEBUG = True
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
 
 
 '''
@@ -141,7 +151,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 #STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'home'
