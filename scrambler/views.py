@@ -121,20 +121,30 @@ def download_url(request, hash):
         expire_url(urlobj.url)
         return HttpResponseRedirect('/')
 
-    if "marked.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
+    if "marked.txt" not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
+        return HttpResponse("Not processed")
+
+
+    if "single.txt" in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
+        #look for single image in urldir
+        for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
+            if files.lower().endswith(('bmp', 'jpg', 'png')):
+                prezipped = files
+
+    else:
+        #look for zip file in urldir
         for files in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp', url)):
             if files.lower().endswith(('.zip')):
                 prezipped = files
 
-        prezipped_address = os.path.join(settings.MEDIA_ROOT, 'temp', url, prezipped)
-        response = HttpResponse(open(prezipped_address, 'rb').read(),
-                             content_type='application/zip')
-        response['Content-Disposition'] = 'attachment; filename=' + prezipped
+    prezipped_address = os.path.join(settings.MEDIA_ROOT, 'temp', url, prezipped)
+    response = HttpResponse(open(prezipped_address, 'rb').read(),
+                         content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename=' + prezipped
 
-        return response
+    return response
 
-    else:
-        return HttpResponse("Not processed")
+
 
 def load_url(request, hash):
 
@@ -193,11 +203,19 @@ def load_url(request, hash):
         return HttpResponseRedirect('/')
         ###change so that it checks if DIR exists, then redirects if it doesnt
 
-    timehash = sha1(str(datetime.now().isoformat()).encode("UTF-8")).hexdigest()[:5]
-    zipname = user + "_" + timehash + ".zip"
-    zipadr = os.path.join(media_path, zipname)
 
-    zf = zipfile.ZipFile(zipadr, mode='w')
+    print(os.listdir(media_path))
+
+    lone = False
+    if "single.txt" in os.listdir(media_path):
+        lone = True
+
+    else:
+        #create zip file if there is more than one image
+        timehash = sha1(str(datetime.now().isoformat()).encode("UTF-8")).hexdigest()[:5]
+        zipname = user + "_" + timehash + ".zip"
+        zipadr = os.path.join(media_path, zipname)
+        zf = zipfile.ZipFile(zipadr, mode='w')
 
     for f in os.listdir(media_path):
         if f.lower().endswith(('bmp', 'jpg', 'png')):
@@ -230,12 +248,13 @@ def load_url(request, hash):
             else:
                 final.save(os.path.join(media_path, f), format="JPEG", subsampling=0, quality=100)
 
+            if not lone:
+                zf = zipfile.ZipFile(zipadr, mode='a')
+                try:
+                    zf.write(os.path.join(media_path, f), arcname=f)
+                finally:
+                    zf.close()
 
-            zf = zipfile.ZipFile(zipadr, mode='a')
-            try:
-                zf.write(os.path.join(media_path, f), arcname=f)
-            finally:
-                zf.close()
 
     with open(os.path.join(media_path, "marked.txt"),"w+") as f:
         f.write("")
@@ -284,6 +303,7 @@ def StartPage(request):
                     if formdat['mode'] == 'Unscramble':
                         urlobj.mode = 'Unscramble'
 
+                    media_path = os.path.join(settings.MEDIA_ROOT, 'temp', url)
 
                     if 'temp' not in os.listdir(settings.MEDIA_ROOT):
                         os.mkdir(os.path.join(settings.MEDIA_ROOT, 'temp'))
@@ -291,7 +311,9 @@ def StartPage(request):
                     if url not in os.listdir(os.path.join(settings.MEDIA_ROOT, 'temp')):
                         os.mkdir(os.path.join(settings.MEDIA_ROOT, 'temp', url))
 
-                    media_path = os.path.join(settings.MEDIA_ROOT, 'temp', url)
+                    if len(request.FILES.getlist('images')) == 1:
+                        with open(os.path.join(media_path, "single.txt"),"w+") as f:
+                            f.write("")
 
                     with open(os.path.join(media_path, 'data'), 'wb') as fp:
                         pickle.dump(formdat, fp)
