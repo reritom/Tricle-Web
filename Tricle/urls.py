@@ -32,4 +32,5 @@ urlpatterns = [
     url(r'about/$', views.AboutPage.as_view(), name='about'),
     url(r'^scrambler/$', views.ScramRedirect),
     url(r'^iaw/$', views.cleanup, name="cleanup"),
+    url(r'^api/', include('API.urls', namespace='api')),
 ]

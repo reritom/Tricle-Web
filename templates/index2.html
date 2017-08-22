@@ -47,11 +47,20 @@
     background-position: center;
     height: 100%;
   }
+
+  .header2 {
+    background-color: #333333;
+    height: 100%;
+  }
+
+  .col{
+    color: #86a59c;
+  }
 </style>
 </head>
 <body id="content">
-<!--
-<nav class="navbar navbar-inverse" style="border-bottom-right-radius:0; border-bottom-left-radius: 0;">
+
+<nav class="navbar navbar-inverse" style="border-radius:0; margin-bottom: 0px;">
   <div class="container-fluid">
     <div class="navbar-header">
         <a class="navbar-brand" href="{% url 'home' %}"><span id="wel">Welcome to </span><strong>Tricle</strong></a>
@@ -76,12 +85,25 @@
       </ul>
   </div>
 </nav>
--->
 
 
 
-<div class="header">
 
+<div class="header2" style="padding: 20px;">
+
+<h1 class="col">Tricle</h1>
+<p class="col">Your images, hidden.</p>
+
+
+
+
+</div>
+
+<h1>Free forever</h1>
+<h1>On all devices</h1>
+<h1>Hide your valuable images</h1>
+
+<p>We live in a digital world, a connected world, a world where our privacy is constantly under threat. Tricle develops free tools for enhancing your privacy</p>
 
 
 <div class="container"  id="jsalert">
@@ -117,7 +139,8 @@
 {% endif %}
 
 
-</div>
+
+
 <script type="text/javascript" src="{% static 'tricle/js/jscheck.js' %}"></script>
 
 

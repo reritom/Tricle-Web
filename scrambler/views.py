@@ -265,12 +265,24 @@ def load_url(request, hash):
             if form['mode'] == "Scramble":
                 name = str(Path(f).with_suffix('')) + ".BMP"
                 final.save(os.path.join(media_path, name))
-                print("S-NAME: ", name)
             else:
-                name = str(Path(f).with_suffix('')) + ".JPG"
-                final.save(os.path.join(media_path, name), format="JPEG", subsampling=0, quality=100)
-
-                print("U-NAME: ", name)
+                try:
+                    name = str(Path(f).with_suffix('')) + ".JPG"
+                    final.save(os.path.join(media_path, name), format="JPEG", subsampling=0, quality=100)
+                except Exception as e:
+                    print("Error saving as JPG for user " + request.user + " in interaction " + urlobj.url + " : " + e)
+                    try:
+                        name = str(Path(f).with_suffix('')) + ".PNG"
+                        final.save(os.path.join(media_path, name), format="PNG", subsampling=0, quality=100)
+                    except Exception as e:
+                        print("Error saving as PNG for user " + request.user + " in interaction " + urlobj.url + " : " + e)
+                        try:
+                            name = str(Path(f).with_suffix('')) + ".BMP"
+                            final.save(os.path.join(media_path, name))
+                        except Exception as e:
+                            print("Error saving as BMP for user " + request.user + " in interaction " + urlobj.url + " : " + e)
+                            print("Unable to save, expiring " + urlobj.url)
+                            expire_url(urlobj.url)
 
             #if not lone:
             if True:

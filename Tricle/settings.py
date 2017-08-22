@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'accounts',
     'scrambler',
+    'API',
 ]
 
 MIDDLEWARE = [
