@@ -63,8 +63,8 @@ ul {
 
 .email{
 color:  #ea4335;
-border: 1px solid #ea4335;
-border-radius: 10px;
+border: 1px solid #FFFFFA;
+border-radius: 5px;
             -webkit-transition: all 0.4s ease-in-out;
             -moz-transition: all 0.4s ease-in-out;
             -o-transition: all 0.4s ease-in-out;
@@ -83,8 +83,8 @@ background-color: #ea4335;
 
 .twitter{
   color:  #1da1f2;
-  border: 1px solid #1da1f2;
-  border-radius: 10px;
+  border: 1px solid #FFFFFA;
+  border-radius: 5px;
             -webkit-transition: all 0.4s ease-in-out;
             -moz-transition: all 0.4s ease-in-out;
             -o-transition: all 0.4s ease-in-out;
@@ -103,8 +103,8 @@ background-color: #1da1f2;
 
 .facebook{
   color:#3b5998;
-  border: 1px solid #3b5998;
-  border-radius: 10px;
+  border: 1px solid #FFFFFA;
+  border-radius: 5px;
             -webkit-transition: all 0.4s ease-in-out;
             -moz-transition: all 0.4s ease-in-out;
             -o-transition: all 0.4s ease-in-out;

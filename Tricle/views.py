@@ -124,6 +124,8 @@ def stats(request):
             context['total_unscrambles'] += profile.unscramble_count
             context['total_file_count'] += profile.total_file_count
 
+    context['dau'] = 'Hidden'
+
     context['total_file_bytes'] = byteconvert(context['total_file_bytes'])
 
     return render(request, "global.html", context)

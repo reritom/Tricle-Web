@@ -16,6 +16,7 @@ class Profile(models.Model):
     total_file_count = models.IntegerField(default=0)
     last_login = models.DateTimeField(default=timezone.now, null=True)
     flagged = models.BooleanField(default=False)
+    test_user = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
