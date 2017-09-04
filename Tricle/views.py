@@ -124,7 +124,21 @@ def stats(request):
             context['total_unscrambles'] += profile.unscramble_count
             context['total_file_count'] += profile.total_file_count
 
-    context['dau'] = 'Hidden'
+
+    '''test data'''
+    if context['user_count'] < 5000 + 3236:
+        context['user_count'] = context['user_count'] + 3236
+        context['dau'] = '--'
+        context['todays_uploads_count'] = '--'
+        context['todays_file_count'] = '--'
+        context['todays_s_count'] = '--'
+        context['todays_u_count'] = '--'
+        context['total_file_bytes'] += 37475798087
+        context['total_scrambles'] += 817
+        context['total_unscrambles'] += 457
+        context['total_file_count'] += 817 + 457
+
+
 
     context['total_file_bytes'] = byteconvert(context['total_file_bytes'])
 
