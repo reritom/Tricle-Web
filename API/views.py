@@ -124,7 +124,29 @@ def remote(request):
         data = json.loads(request.body.decode("utf-8"))
         print(data)
 
+        if 'k1' not in data:
+            ret_dict['error'] = 'No k1 provided'
+            return JsonResponse(ret_dict)
 
-        return JsonResponse(ans)
+        if 'k2' not in data:
+            ret_dict['error'] = 'No k2 provided'
+            return JsonResponse(ret_dict)
+
+        if 'k3' not in data:
+            ret_dict['error'] = 'No k3 provided'
+            return JsonResponse(ret_dict)
+
+        if 'mode' not in data:
+            ret_dict['error'] = 'No k1 provided'
+            return JsonResponse(ret_dict)
+
+        if 'uri' not in data:
+            ret_dict['error'] = 'No URI provided'
+            return JsonResponse(ret_dict)
+
+
+        ret_dict['valid'] = True
+        return JsonResponse(ret_dict)
     else:
-        return JsonResponse({'pink':'llama'})
+        ret_dict['error'] = 'POST API, not GET'
+        return JsonResponse(ret_dict)
