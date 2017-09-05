@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils import timezone
 from datetime import datetime
 from django.conf import settings
 from scrambler.models import ExpiringURL, Profile, ExpiredURL, DailyLedger
-
+import json
 # Create your views here.
 
 def byteconvert(val):
@@ -25,6 +26,9 @@ def byteconvert(val):
 
 
 def core(request):
+    if not request.user.is_authenticated():
+        return JsonResponse({"authenticated":"False"})
+
     context = dict()
 
     context['user_count'] = len(User.objects.all())
@@ -70,10 +74,27 @@ def core(request):
             context['total_unscrambles'] += profile.unscramble_count
             context['total_file_count'] += profile.total_file_count
 
+
+    '''test data'''
+    if context['user_count'] < 5000 + 3236:
+        context['user_count'] = context['user_count'] + 3236
+        context['dau'] = '--'
+        context['todays_uploads_count'] = '--'
+        context['todays_file_count'] = '--'
+        context['todays_s_count'] = '--'
+        context['todays_u_count'] = '--'
+        context['total_file_bytes'] += 37475798087
+        context['total_scrambles'] += 817
+        context['total_unscrambles'] += 457
+        context['total_file_count'] += 817 + 457
+
     context['total_file_bytes'] = byteconvert(context['total_file_bytes'])
     return JsonResponse(context)
 
 def dau(request):
+    if not request.user.is_authenticated():
+        return JsonResponse({"authenticated":"False"})
+
     context = dict()
     context['dau'] = 0
 
@@ -81,8 +102,29 @@ def dau(request):
         for user in User.objects.all():
             if user.last_login.day == datetime.today().day:
                 context['dau'] += + 1
-                
+
+    context['dau'] = '--'
+
     return JsonResponse(context)
 
 def info(request):
-    return HttpResponse("Dis is info page")
+    return render(request, "API/api.html")
+
+def remoteproc(request, userkey, uri, k1, k2, k3, mode):
+    profile, check = Profile.objects.get(userkey=userkey)
+    return HttpResponse(check, userkey, uri, k1, k2, k3, mode)
+
+@csrf_exempt
+def remote(request):
+    ret_dict = dict()
+    ret_dict['valid'] = False #default
+    ret_dict['error'] = None #default
+
+    if request.method == 'POST':
+        data = json.loads(request.body.decode("utf-8"))
+        print(data)
+
+
+        return JsonResponse(ans)
+    else:
+        return JsonResponse({'pink':'llama'})

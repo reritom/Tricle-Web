@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+
+{% block icon_block %}
+<h1 style="text-align: center;"><i class="fa fa-code fa-2x" aria-hidden="true"></i></h1>
+{% endblock %}
+
+{% block content_block  %}
+<div class="container">
+  <div class="jumbotron" style="background-color: #EFF7F6; text-align: center;">
+      <h1 style="font-weight: lighter;">
+        API
+    </h1>
+  </div>
+</div>
+
+<div class="container">
+  <div class="jumbotron">
+
+<h1>GET</h1>
+<p>extension:
+core - returns json of all data shown on the analytics page
+core can be followed by a specific item, i.e core/dau, all core extensions are shown below
+
+user_count
+dau
+todays_uploads_count
+todays_file_count
+todays_s_count
+todays_u_count
+total_file_bytes
+total_scrambles
+total_unscrambles
+total_file_count</p>
+
+<h1>POST</h1>
+<p>images can be scrambled and unscrambled using the following API</p>
+<p>Each user has an unique 20-digit userkey which can be found on their account page</p>
+<p>To use the API, the client must encode their image as a base 64 image URI, which is a long, hexadecimal representation of their image.</p>
+<p>using api/remote/USERKEY/URI/k1=K1&k2=K2&k3=K3&mode=MODE</p>
+<p>This will return a json object </p>
+</div>
+</div>
+
+
+
+{% endblock %}

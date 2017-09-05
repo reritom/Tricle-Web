@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.conf import settings
 
 from datetime import datetime
+from hashlib import sha1
 # Create your models here.
 
 class Profile(models.Model):
@@ -17,9 +18,20 @@ class Profile(models.Model):
     last_login = models.DateTimeField(default=timezone.now, null=True)
     flagged = models.BooleanField(default=False)
     test_user = models.BooleanField(default=False)
+    userkey = models.CharField(default=0, max_length=255)
 
     def __str__(self):
         return self.user.username
+
+    def userkey_gen(self):
+        username = self.user.username
+
+        user_hash = username.encode("UTF-8")
+        user_hash = sha1(user_hash).hexdigest()[:20]
+
+        self.userkey = user_hash
+        self.save()
+        return self.userkey
 
 class ExpiringURL(models.Model):
     url = models.CharField(default=0, max_length=255, unique=True)

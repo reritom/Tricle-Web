@@ -72,6 +72,9 @@ def updateLastLogin(sender, user, request, **kwargs):
     profile.last_login = timezone.now()
     profile.save()
 
+    if profile.userkey == '0':
+        profile.userkey_gen()
+
 user_logged_in.connect(updateLastLogin)
 
 def stats(request):
