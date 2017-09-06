@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 
 from django.contrib.auth.models import User
-from .models import Profile, ExpiringURL, ExpiredURL, DailyLedger
+from .models import Profile, ExpiringURL, ExpiredURL, DailyLedger, RemoteToken
 from .forms import ScrambleForm
 from .scramble import scrambler
 
@@ -400,6 +400,29 @@ def StartPage(request):
 
 @login_required
 def AccountPage(request):
-    n_o_b_u = byteconvert(request.user.profile.total_size_of_uploaded_images)
+    context = dict()
+    context['n_o_b_u'] = byteconvert(request.user.profile.total_size_of_uploaded_images)
+    context['userkey'] = request.user.profile.userkey
 
-    return render(request, 'scrambler/account.html', {'n_o_b_u': n_o_b_u })
+    try:
+        rmtoken = RemoteToken.objects.get(user_name=str(request.user))
+    except:
+        rmtoken, check = RemoteToken.objects.get_or_create(user_name=str(request.user))
+        rmtoken.create_token()
+
+    if rmtoken.token == '0':
+        rmtoken.create_token()
+
+    if rmtoken.uses == 20:
+        rmtoken.expire()
+        rmtoken, check = RemoteToken.objects.get_or_create(user_name=str(request.user))
+        rmtoken.create_token()
+
+    context['api_requests'] = request.user.profile.api_requests
+    context['api_unscrambles'] = request.user.profile.api_unscrams
+    context['api_scrambles'] = request.user.profile.api_scrams
+
+    context['token'] = rmtoken.token
+    context['remain'] = 20 - rmtoken.uses
+
+    return render(request, 'scrambler/account.html', context)

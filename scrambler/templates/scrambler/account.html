@@ -64,6 +64,72 @@
   </div>
 </div>
 
+
+
+<hr>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    User API key:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ userkey }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Token:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ token}}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Remaining uses:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ remain }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12" style="margin-top:10px; margin-bottom:10px;">
+    <a href="{% url 'api:info' %}">More about our API</a>
+  </div>
+</div>
+
+<hr>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    Total API requests:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ api_requests }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    API Scrambles:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ api_scrambles }}
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+    API Unscrambles:
+  </div>
+  <div class="col-xs-6" style="margin-top:10px; margin-bottom:10px;">
+  {{ api_unscrambles }}
+  </div>
+</div>
+
 <br>
 
 <div class="row">
@@ -71,6 +137,8 @@
     <button type="button" class="btn btn-primary btn-block btn-lg" name="button">Change Account Details</button>
   </div>
 </div>
+
+<br>
 
 </div>
 </div>

@@ -20,6 +20,10 @@ class Profile(models.Model):
     test_user = models.BooleanField(default=False)
     userkey = models.CharField(default=0, max_length=255)
 
+    api_scrams = models.IntegerField(default=0)
+    api_unscrams = models.IntegerField(default=0)
+    api_requests = models.IntegerField(default=0)
+
     def __str__(self):
         return self.user.username
 
@@ -77,5 +81,68 @@ class DailyLedger(models.Model):
     total_files = models.IntegerField(default=0)
     login_count = models.IntegerField(default=0)
 
+    api_requests = models.IntegerField(default=0)
+    api_scrams = models.IntegerField(default=0)
+    api_unscrams = models.IntegerField(default=0)
+
     def __str__(self):
         return self.date.strftime("%B %d, %Y")
+
+class RemoteToken(models.Model):
+    user_name = models.CharField(default=0, max_length=255)
+    token = models.CharField(default=0, max_length=255)
+    uses = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.token
+
+    def increment_uses(self):
+        if self.uses < 20:
+            self.uses += 1
+            self.save()
+            return True
+        else:
+            self.expire()
+            return False
+
+    def expire(self):
+        exptoken, check = ExpiredToken.objects.get_or_create(user_name=self.user_name, token=self.token)
+        newtoken, check = RemoteToken.objects.get_or_create(user_name=self.user_name)
+        newtoken.create_token()
+        self.delete()
+        return True
+
+    def create_token(self):
+        user = str(self.user_name)
+        time = str(datetime.now().isoformat())
+        hashkey = (user + time).encode("UTF-8")
+
+        userhash = user.encode("UTF-8")
+        userhash = sha1(userhash).hexdigest()[:5]
+
+        otherhash = sha1(hashkey).hexdigest()[:15]
+
+        self.token = str(otherhash) + str(userhash)[::-1]
+        self.save()
+        return self.token
+
+class ExpiredToken(models.Model):
+    user_name = models.CharField(default=0, max_length=255)
+    token = models.CharField(default=0, max_length=255)
+
+    def __str__(self):
+        return self.token
+
+    def propagate(self, user, token):
+        self.user_name = user
+        self.token = token
+        self.save()
+
+class RemoteInteraction(models.Model):
+    rm_id = models.CharField(default=0, max_length=255, unique=True)
+    user_name = models.CharField(default=0, max_length=255)
+    created = models.DateTimeField(default=timezone.now, null=True)
+    mode = models.CharField(default="Scramble", max_length=255)
+
+    def __str__(self):
+        return self.rm_id

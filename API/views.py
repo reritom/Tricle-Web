@@ -6,8 +6,11 @@ from django.db.models.signals import post_save
 from django.utils import timezone
 from datetime import datetime
 from django.conf import settings
-from scrambler.models import ExpiringURL, Profile, ExpiredURL, DailyLedger
-import json
+from scrambler.models import ExpiringURL, Profile, ExpiredURL, DailyLedger, RemoteToken, ExpiredToken, RemoteInteraction
+from scrambler import scramble
+import json, io
+from PIL import Image
+from hashlib import sha1
 # Create your views here.
 
 def byteconvert(val):
@@ -110,9 +113,6 @@ def dau(request):
 def info(request):
     return render(request, "API/api.html")
 
-def remoteproc(request, userkey, uri, k1, k2, k3, mode):
-    profile, check = Profile.objects.get(userkey=userkey)
-    return HttpResponse(check, userkey, uri, k1, k2, k3, mode)
 
 @csrf_exempt
 def remote(request):
@@ -121,8 +121,21 @@ def remote(request):
     ret_dict['error'] = None #default
 
     if request.method == 'POST':
-        data = json.loads(request.body.decode("utf-8"))
-        print(data)
+        try:
+            data = json.loads(request.body.decode("utf-8"))
+        except:
+            ret_dict['error'] = 'Error trying to decode posted data. Make sure it is in JSON format'
+            return JsonResponse(ret_dict)
+
+        if 'userkey' not in data:
+            ret_dict['error'] = 'No userkey provided'
+            return JsonResponse(ret_dict)
+
+        try:
+            profile = Profile.objects.get(userkey=data['userkey'])
+        except Profile.DoesNotExist:
+            ret_dict['error'] = 'Unrecognised userkey'
+            return JsonResponse(ret_dict)
 
         if 'k1' not in data:
             ret_dict['error'] = 'No k1 provided'
@@ -137,16 +150,110 @@ def remote(request):
             return JsonResponse(ret_dict)
 
         if 'mode' not in data:
-            ret_dict['error'] = 'No k1 provided'
+            ret_dict['error'] = 'No mode provided'
             return JsonResponse(ret_dict)
 
         if 'uri' not in data:
-            ret_dict['error'] = 'No URI provided'
+            ret_dict['error'] = 'No uri provided'
             return JsonResponse(ret_dict)
 
+        if 'token' not in data:
+            ret_dict['error'] = 'No token provided'
+            return JsonResponse(ret_dict)
+
+        try:
+            rmtoken = RemoteToken.objects.get(token=data['token'])
+        except:
+            try:
+                exptoken = ExpiredToken.objects.get(token=data['token'])
+            except:
+                ret_dict['error'] = 'Expired token - visit your account page for a new one'
+                return JsonResponse(ret_dict)
+
+            ret_dict['error'] = 'Invalid token - visit your account page for a new one'
+            return JsonResponse(ret_dict)
+
+        if rmtoken.uses >= 20:
+            rmtoken.expire()
+            ret_dict['error'] = 'Expired token - visit your account page for a new one'
+            return JsonResponse(ret_dict)
+
+
+        '''Check the mode'''
+
+        if data['mode'].lower() == "scramble" or data['mode'].lower() == "scram" or data['mode'].lower() == "s":
+            data['mode'] = 'Scramble'
+
+        elif data['mode'].lower() == "unscramble" or data['mode'].lower() == "unscram" or data['mode'].lower() == "u":
+            data['mode'] = 'Unscramble'
+
+        else:
+            ret_dict['error'] = 'mode needs to be scramble or unscramble'
+            return JsonResponse(ret_dict)
+
+
+        '''create token interaction model: user, mode, day'''
+
+        rmid = create_api_id(profile.user.username)
+        token_interaction, token_check = RemoteInteraction.objects.get_or_create(rm_id=rmid, user_name=profile.user.username, mode=data['mode'])
+        daily_ledger, check = DailyLedger.objects.get_or_create(date=timezone.now().date())
+
+        profile.api_requests += 1
+        daily_ledger.api_requests +=1
+
+        if data['mode'] == 'Scramble':
+            profile.api_scrams += 1
+            daily_ledger.api_scrams += 1
+        else:
+            profile.api_unscrams += 1
+            daily_ledger.api_unscrams += 1
+
+        rmtoken.uses += 1
+
+        rmtoken.save()
+        profile.save()
+        daily_ledger.save()
+
+
+        image = io.StringIO()
+        image = Image.open(data['uri'])
+        
+
+        try:
+            image = io.StringIO()
+            image = Image.open(data['uri'])
+        except:
+            ret_dict['error'] = 'Error converting b64 string to PIL image'
+            return JsonResponse(ret_dict)
+
+        try:
+            final = scrambler(data['mode'], data['k1'], data['k2'], data['k3'], image)
+        except:
+            ret_dict['error'] = 'Scrambling error'
+            return JsonResponse(ret_dict)
+
+        '''try to open uri as pil image, pass to scrambler, return json uri'''
 
         ret_dict['valid'] = True
         return JsonResponse(ret_dict)
     else:
         ret_dict['error'] = 'POST API, not GET'
         return JsonResponse(ret_dict)
+
+
+def create_api_id(user):
+    time = str(datetime.now().isoformat())
+    hashkey = (user + time).encode("UTF-8")
+
+    userhash = user.encode("UTF-8")
+    userhash = sha1(userhash).hexdigest()[:10]
+
+    otherhash = sha1(hashkey).hexdigest()[:20]
+
+    rmid = str(otherhash) + str(userhash)[::-1]
+
+    try:
+        interaction = RemoteInteraction.objects.get(rm_id=rmid)
+        return create_api_id(user)
+    except:
+        return rmid #remote id
