@@ -404,6 +404,10 @@ def AccountPage(request):
     context['n_o_b_u'] = byteconvert(request.user.profile.total_size_of_uploaded_images)
     context['userkey'] = request.user.profile.userkey
 
+    if request.user.profile.userkey == '0':
+        userprofile = Profile.objects.get(user=request.user)
+        context['userkey'] = userprofile.userkey_gen()
+
     try:
         rmtoken = RemoteToken.objects.get(user_name=str(request.user))
     except:
