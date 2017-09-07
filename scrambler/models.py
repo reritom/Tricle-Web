@@ -97,7 +97,7 @@ class RemoteToken(models.Model):
         return self.token
 
     def increment_uses(self):
-        if self.uses < 20:
+        if self.uses < settings.API_TOKEN_LIMIT:
             self.uses += 1
             self.save()
             return True

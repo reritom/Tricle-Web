@@ -7,10 +7,12 @@ from django.utils import timezone
 from datetime import datetime
 from django.conf import settings
 from scrambler.models import ExpiringURL, Profile, ExpiredURL, DailyLedger, RemoteToken, ExpiredToken, RemoteInteraction
-from scrambler import scramble
+from scrambler.scramble import scrambler
 import json, io
 from PIL import Image
 from hashlib import sha1
+from base64 import decodestring
+import base64
 # Create your views here.
 
 def byteconvert(val):
@@ -121,11 +123,21 @@ def remote(request):
     ret_dict['error'] = None #default
 
     if request.method == 'POST':
+
+        print(request.FILES)
+
+
+
         try:
             data = json.loads(request.body.decode("utf-8"))
         except:
             ret_dict['error'] = 'Error trying to decode posted data. Make sure it is in JSON format'
             return JsonResponse(ret_dict)
+
+        if len(request.FILES.getlist('media')) == 0:
+            print("ah shit")
+
+        print(data)
 
         if 'userkey' not in data:
             ret_dict['error'] = 'No userkey provided'
@@ -173,7 +185,7 @@ def remote(request):
             ret_dict['error'] = 'Invalid token - visit your account page for a new one'
             return JsonResponse(ret_dict)
 
-        if rmtoken.uses >= 20:
+        if rmtoken.uses >= settings.API_TOKEN_LIMIT:
             rmtoken.expire()
             ret_dict['error'] = 'Expired token - visit your account page for a new one'
             return JsonResponse(ret_dict)
@@ -215,16 +227,15 @@ def remote(request):
         daily_ledger.save()
 
 
-        image = io.StringIO()
-        image = Image.open(data['uri'])
-        
 
         try:
-            image = io.StringIO()
-            image = Image.open(data['uri'])
+            image = io.BytesIO(base64.b64decode(data['uri']))
+            image = Image.open(image)
+            #image.show()
         except:
             ret_dict['error'] = 'Error converting b64 string to PIL image'
             return JsonResponse(ret_dict)
+
 
         try:
             final = scrambler(data['mode'], data['k1'], data['k2'], data['k3'], image)
@@ -232,7 +243,17 @@ def remote(request):
             ret_dict['error'] = 'Scrambling error'
             return JsonResponse(ret_dict)
 
-        '''try to open uri as pil image, pass to scrambler, return json uri'''
+        #final.show()
+
+        try:
+            buffer = io.BytesIO()
+            final.save(buffer, format="JPEG")
+            img_str = base64.b64encode(buffer.getvalue())
+        except:
+            ret_dict['error'] = 'URI return buffer error'
+            return JsonResponse(ret_dict)
+
+        ret_dict['uri'] = img_str.decode('utf-8')
 
         ret_dict['valid'] = True
         return JsonResponse(ret_dict)

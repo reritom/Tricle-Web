@@ -413,7 +413,7 @@ def AccountPage(request):
     if rmtoken.token == '0':
         rmtoken.create_token()
 
-    if rmtoken.uses == 20:
+    if rmtoken.uses == settings.API_TOKEN_LIMIT:
         rmtoken.expire()
         rmtoken, check = RemoteToken.objects.get_or_create(user_name=str(request.user))
         rmtoken.create_token()
@@ -423,6 +423,6 @@ def AccountPage(request):
     context['api_scrambles'] = request.user.profile.api_scrams
 
     context['token'] = rmtoken.token
-    context['remain'] = 20 - rmtoken.uses
+    context['remain'] = settings.API_TOKEN_LIMIT - rmtoken.uses
 
     return render(request, 'scrambler/account.html', context)
