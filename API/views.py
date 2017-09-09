@@ -123,21 +123,12 @@ def remote(request):
     ret_dict['error'] = None #default
 
     if request.method == 'POST':
-
-        print(request.FILES)
-
-
-
         try:
             data = json.loads(request.body.decode("utf-8"))
         except:
             ret_dict['error'] = 'Error trying to decode posted data. Make sure it is in JSON format'
             return JsonResponse(ret_dict)
 
-        if len(request.FILES.getlist('media')) == 0:
-            print("ah shit")
-
-        print(data)
 
         if 'userkey' not in data:
             ret_dict['error'] = 'No userkey provided'
@@ -188,6 +179,10 @@ def remote(request):
         if rmtoken.uses >= settings.API_TOKEN_LIMIT:
             rmtoken.expire()
             ret_dict['error'] = 'Expired token - visit your account page for a new one'
+            return JsonResponse(ret_dict)
+
+        if rmtoken.user_name != profile.user.username:
+            ret_dict['error'] = 'Token user and userkey user do not match'
             return JsonResponse(ret_dict)
 
 

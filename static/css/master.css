@@ -1,11 +1,11 @@
-@import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic");
-
+/*@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic");*/
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans");
 @media screen {
 
   html, body { height: 100%; width: 100%; margin: 0;  background-color: #FFFFFA;}
 
   body, p{
-    font-family: "Source Sans Pro", Helvetica, sans-serif;
+    font-family: 'Noto Sans', sans-serif !important;
     font-weight: lighter;
     font-size: 16px;
     color: #444;}
@@ -14,6 +14,12 @@
 .rowhead{
   background-color: #4C6085;
   color: #FFFFFA;
+}
+
+.indhead{
+  background-image: url("/static/images/new.jpg");
+  background-position: center;
+  background-size: cover;
 }
 
   .red{
@@ -31,28 +37,65 @@
   animation: fa-spin 6s infinite linear;
 }
 
+.diamond{
+color: #0093D1;
+  background-color: #FFFFFA;
+  border: 1px solid #FFFFFA;
+  border-radius: 5px;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
 
+.diamond:hover{
+  background-color: #0093D1;
+  color: #FFFFFA;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
 
-  #lightblue {
-    border-left: 3px solid #39A0ED;
-    transition: all 500ms linear;
-    -moz-transition: all 500ms linear;
-    -webkit-transition: all 500ms linear;
-    -o-transition: all 500ms linear;
-  }
+.devices{
+  border: 1px solid #FFFFFA;
+  border-radius: 5px;
+    background-color: #FFFFFA;
+    color: #F2635F;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
 
-  #lightblue:hover{
-    transition: all 500ms linear;
-    -moz-transition: all 500ms linear;
-    -webkit-transition: all 500ms linear;
-    -o-transition: all 500ms linear;
+.devices:hover{
+    background-color: #F2635F;
+    color: #FFFFFA;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
 
-    border-left-width:20px;
-    padding-left: 23px;
-    background-color:  #E0F1FF;
-    border-radius: 5px;
-    color: #32322C;
-  }
+.free{
+  border: 1px solid #FFFFFA;
+  border-radius: 5px;
+    background-color: #FFFFFA;
+    color: #F4D00C;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
+
+.free:hover{
+background-color: #F4D00C;
+color: #FFFFFA;
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  -o-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out;
+}
 
 
 

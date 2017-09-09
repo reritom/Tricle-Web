@@ -303,6 +303,7 @@ def load_url(request, hash):
     return JsonResponse(data)
 
 
+@login_required
 def StartPage(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect('/')

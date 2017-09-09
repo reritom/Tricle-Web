@@ -27,7 +27,7 @@ SECRET_KEY = '&=c(xa#oww-apg3$qnc8$mo*99yti*!rkz0aymemcwp*gi)@n='
 
 
 
-DEPLOYSTAT = True
+DEPLOYSTAT = False
 
 if DEPLOYSTAT == True:
     ALLOWED_HOSTS = ['tricle.xyz',
@@ -35,19 +35,13 @@ if DEPLOYSTAT == True:
                     'reritom.pythonanywhere.com']
     DEBUG = False
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    SECURE_SSL_REDIRECT = True
 else:
     ALLOWED_HOSTS = []
     DEBUG = True
     STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 
-
-'''
-FOR DEPLOYMENT:
-CHANGE ALLOWED HOSTS
-TURN OFF DEBUG
-CHANGE STATICFILES_DIRS TO STATIC_ROOT
-'''
 
 # Application definition
 
