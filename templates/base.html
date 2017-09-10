@@ -89,20 +89,16 @@
       <div class="col-md-4">
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{% url 'about' %}">About us</a></li>
-          <!--<li><a href="#">Blog</a></li>-->
         </ul>
       </div>
       <div class="col-md-4">
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{% url 'go' %}">Getting Started</a></li>
-          <!--<li><a href="#">Blog</a></li>-->
         </ul>
       </div>
       <div class="col-md-4">
-
         <ul class="nav nav-pills nav-stacked">
           <li><a href="https://imgur.com/a/QcMTV" >Examples</a></li>
-          <!--<li><a href="#">Blog</a></li>-->
         </ul>
       </div>
     </div>
@@ -115,20 +111,17 @@
       <div class="col-md-4">
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{% url 'global' %}">Analytics</a></li>
-          <!--<li><a href="#">Blog</a></li>-->
         </ul>
       </div>
       <div class="col-md-4">
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{% url 'contact' %}">Contact Us</a></li>
-          <!--<li><a href="#">Blog</a></li>-->
         </ul>
       </div>
       <div class="col-md-4">
 
         <ul class="nav nav-pills nav-stacked">
           <li><a href="{% url 'privacy' %}">Privacy</a></li>
-          <!--<li><a href="#">Blog</a></li>-->
         </ul>
       </div>
     </div>
@@ -143,6 +136,11 @@
 
 </footer>
 <script type="text/javascript" src="{% static 'tricle/js/jscheck.js' %}"></script>
+
+{% block js_block %}
+
+{% endblock %}
+
 
 </body>
 

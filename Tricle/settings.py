@@ -27,7 +27,7 @@ SECRET_KEY = '&=c(xa#oww-apg3$qnc8$mo*99yti*!rkz0aymemcwp*gi)@n='
 
 
 
-DEPLOYSTAT = True
+DEPLOYSTAT = False
 
 if DEPLOYSTAT == True:
     ALLOWED_HOSTS = ['tricle.xyz',
