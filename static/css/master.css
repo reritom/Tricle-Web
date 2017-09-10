@@ -172,6 +172,16 @@ background-color: #3b5998;
   height: 100%;
 }
 
+.tophead{
+  border: 1px solid #ec0b43;
+/*  background-color:#39A0ED;*/
+  background-color: #ec0b43;
+  color: #FFFFFA;
+  height: 100%;
+}
+
+
+
 #modalhead {
   border-top-right-radius: 5px;
   border-top-left-radius: 5px;
