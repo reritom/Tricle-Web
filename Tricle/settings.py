@@ -36,6 +36,8 @@ if DEPLOYSTAT == True:
     DEBUG = False
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
 else:
     ALLOWED_HOSTS = []
     DEBUG = True

@@ -165,20 +165,14 @@ background-color: #3b5998;
 }
 
 .tophead{
-  border: 1px solid #4C6085;
+  /*border: 1px solid #4C6085;*/
 /*  background-color:#39A0ED;*/
-  background-color: #4C6085;
+  background-color: #aecfe5;
   color: #FFFFFA;
+  margin-top: 20px;
   height: 100%;
 }
 
-.errorhead{
-  border: 1px solid #ec0b43;
-/*  background-color:#39A0ED;*/
-  background-color: #ec0b43;
-  color: #FFFFFA;
-  height: 100%;
-}
 
 
 
