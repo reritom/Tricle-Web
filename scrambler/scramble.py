@@ -48,6 +48,15 @@ def scrambler(mode, key1, key2, key3, original):
 
         seeds.append(seed)
 
+
+    '''Extra Seedgen'''
+
+    seeds[0] = seeds[0] + seeds[1][1:] + seeds[2][1:]
+    seeds[1] = seeds[1] + seeds[0][1:] + seeds[2][1:]
+    seeds[2] = seeds[2] + seeds[0][1:] + seeds[1][1:]
+    
+
+
     '''Create encoding arrays from the seeds'''
     encodeArray[0] = list(range(0,colx))
     encodeArray[1] = list(range(0,rowy))
